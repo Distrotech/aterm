@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# This script will launch aterm with different tinting color 
+# every time you start it
+# I don't really know how that can be of any use at all, but some
+# folks like it - so here it is
+
+CLRCODE=`expr $RANDOM % 6`
+ATRMPATH=$DESTDIR@prefix@/bin
+
+{ [ "$CLRCODE" -eq "0" ] && CLRNAME="-tint blue -fg yellow -bg black"; } || 
+{ [ "$CLRCODE" -eq "1" ] && CLRNAME="-tint red -fg white -bg black"; } || 
+{ [ "$CLRCODE" -eq "2" ] && CLRNAME="-tint green -fg white -bg white"; } ||
+{ [ "$CLRCODE" -eq "3" ] && CLRNAME="-tint cyan -fg white -bg white"; } || 
+{ [ "$CLRCODE" -eq "4" ] && CLRNAME="-tint magenta -fg white -bg black"; } || 
+{ [ "$CLRCODE" -eq "5" ] && CLRNAME="-tint yellow -fg blue -bg white"; } 
+
+exec $ATRMPATH/aterm -fg white -tr $CLRNAME $@

@@ -1,0 +1,41 @@
+For those of you who experience errors like "can't open pseudo-tty"
+or any other errors related to openning tty here is the information you
+need to read :
+
+If you have glibc2 installed , and you compiled Unix98 PTY support in 
+to the linux kernel, then you need to do some additional configuration 
+stuff. Here is the excerpt from Documentation/Changes file, supplied with
+Linux kernel 2.2.* :
+
+***************** Documentation/Changes excerpt starts *********************
+
+   The most current version should always be available from
+http://cyberbuzz.gatech.edu/kaboom/linux/ as well.
+
+
+   As of 2.1.115, support for the deprecated major 4 /dev/ttyp* devices
+was removed.  If necessary (eg, you get "out of pty" error messages when
+you obviously are not out of pty's), create major 3 /dev/tty* and major
+2 /dev/pty* devices (see Documentation/devices.txt for more
+information).  In general, you should make sure that your /dev
+directory is up-to-date if you are experiencing any problems.
+
+   Optional support for Unix98 pty devices has also been added. If you
+want to use the Unix98 ptys, you should be running at least
+glibc-2.0.9x, and you must switch completely to Unix98 pty's.  The
+general procedure for configuring Unix98 pty support is:
+
+- Compile your kernel with CONFIG_UNIX98_PTYS and CONFIG_DEVPTS_FS.
+- mknod /dev/ptmx c 5 2
+  chmod 666 /dev/ptmx
+  mkdir /dev/pts
+- Add to /etc/fstab:
+
+  none            /dev/pts        devpts	gid=5,mode=620    0 0
+
+   (Note:  gid=5 is applicable for RedHat systems for which group "tty" has
+   gid 5.  Adjust according to your distribution.  Use mode=600 if you want
+   "mesg n" to be default.)
+- Mount /dev/pts
+
+***************** Documentation/Changes excerpt ends ***********************

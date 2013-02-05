@@ -1,0 +1,110 @@
+# src/Makefile.in	-*- Makefile -*-
+# $Id: Makefile.in,v 1.4 2005/05/26 16:44:49 sasha Exp $
+@MCOMMON@
+
+srcdir = @srcdir@
+VPATH = @srcdir@
+
+basedir = ..
+thisdir = src
+
+# for developers: the following debug options may be used
+#	-DDEBUG_CMD -DDEBUG_MENU -DDEBUG_MENUARROWS -DDEBUG_MENUBAR_STACKING
+#	-DDEBUG_MENU_LAYOUT -DDEBUG_RESOURCES -DDEBUG_SCREEN
+#	-DDEBUG_SEARCH_PATH -DDEBUG_SELECT -DDEBUG_TTYMODE -DDEBUG_X
+DEBUG=@DEBUG@
+
+first_rule: all
+dummy:
+
+SRCS =	command.c graphics.c grkelot.c main.c menubar.c misc.c \
+	netdisp.c rmemset.c screen.c scrollbar.c utmp.c xdefaults.c \
+	pixmap.c thai.c
+
+OBJS =	command.o graphics.o grkelot.o main.o menubar.o misc.o \
+	netdisp.o rmemset.o screen.o scrollbar.o utmp.o xdefaults.o \
+	pixmap.o thai.o
+
+HDRS =	feature.h protos.h grkelot.h rxvt.h rxvtgrx.h screen.h version.h thai.h
+
+PROS =	command.pro graphics.pro grkelot.pro main.pro menubar.pro misc.pro \
+	netdisp.pro rmemset.pro screen.pro scrollbar.pro utmp.pro xdefaults.pro \
+	pixmap.pro thai.pro
+
+DEPS =  rxvt.h version.h ${basedir}/config.h feature.h
+
+#
+# Distribution variables
+#
+
+DIST = $(HDRS) $(SRCS) Makefile.in gcc-Wall .indent.pro makeprotos-sed
+
+.SUFFIXES: .c .o .pro
+
+# inference rules
+.c.o:
+	$(CC) $(DEFS) $(DEBUG) -c $(CFLAGS) $(CPPFLAGS) $(CFLAGS_LIBAFTERIMAGE) $(CFLAGS_LIBAFTERSTEP)   $(XINC)  -I. -I$(basedir) -I$(srcdir) $(DINCLUDE) $<
+#-------------------------------------------------------------------------
+all: aterm
+
+aterm: version.h $(PROS) $(OBJS)
+	$(CC) $(LDFLAGS) -o $@ $(OBJS) $(LIBS) $(XLIB) $(DLIB)
+
+.c.pro:
+	$(SED) -n -f $(srcdir)/makeprotos-sed $< > $@
+
+tags: $(SRCS)
+	ctags $(SRCS)
+
+allbin: aterm
+
+alldoc:
+
+clean:
+	$(RMF) aterm core a.out $(OBJS) *.bak *~
+
+realclean: clean
+	$(RMF) tags *.pro
+
+distclean: realclean
+	if test $(srcdir) = .; then $(MAKE) realclean; fi
+	(cd $(srcdir); $(RMF) Makefile)
+
+install: allbin alldoc
+	$(INSTALL_PROGRAM) aterm $(DESTDIR)$(bindir)/$(binprefix)aterm
+
+uninstall:
+	(cd $(bindir); $(RMF) $(binprefix)aterm)
+
+distdirs:
+	mkdir $(basedir)/../$(VERNAME)/$(thisdir)
+
+distcopy:
+	$(CP) -p $(DIST) $(basedir)/../$(VERNAME)/$(thisdir)
+
+# Semi-automatic generation of dependencies:
+# Use gcc -MM because X11 `makedepend' doesn't work on all systems
+# and it also includes system headers.
+# `semi'-automatic since dependencies are generated at distribution time.
+
+#distdepend:
+#	mv Makefile.in Makefile.in~
+#	sed "/^# DO NOT DELETE:/,$$ d" Makefile.in~ > Makefile.in
+#	echo "# DO NOT DELETE: ugly dependency list follows" >> Makefile.in
+#	gcc -MM $(CPPFLAGS) $(XINC) -I. -I$(basedir) -I$(srcdir) $(SRCS) >> Makefile.in
+
+# -----------------------------------------------------------------------
+# DO NOT DELETE: nice dependency list follows
+command.o:   command.c   command.pro   $(DEPS)
+graphics.o:  graphics.c  graphics.pro  $(DEPS)
+grkelot.o:   grkelot.c   grkelot.pro   $(DEPS)
+main.o:      main.c      main.pro      $(DEPS)
+menubar.o:   menubar.c   menubar.pro   $(DEPS)
+misc.o:      misc.c      misc.pro      $(DEPS)
+netdisp.o:   netdisp.c   netdisp.pro   $(DEPS)
+screen.o:    screen.c    screen.pro    $(DEPS) screen.h
+scrollbar.o: scrollbar.c scrollbar.pro $(DEPS)
+utmp.o:      utmp.c      utmp.pro      $(DEPS)
+xdefaults.o: xdefaults.c xdefaults.pro $(DEPS)
+pixmap.o:    pixmap.c    pixmap.pro    $(DEPS)
+thai.o:      thai.c      thai.pro      $(DEPS) thai.h

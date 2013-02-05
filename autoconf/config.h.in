@@ -1,0 +1,285 @@
+/* autoconf/config.h.in.  Generated from configure.in by autoheader.  */
+
+/* Defined if we can have background images */
+#undef BACKGROUND_IMAGE
+
+/* Define if you want support for Greek Elot-928 & IBM-437 keyboard */
+#undef GREEK_SUPPORT
+
+/* Defined if AfterBase library is available */
+#undef HAVE_AFTERBASE
+
+/* Defined if AfterImage library is available */
+#undef HAVE_AFTERIMAGE
+
+/* Defined if AfterStep library is available, and MyStyles could be used to
+   define background image */
+#undef HAVE_AFTERSTEP
+
+/* Define to 1 if you have the <assert.h> header file. */
+#undef HAVE_ASSERT_H
+
+/* Define to 1 if you have the `atexit' function. */
+#undef HAVE_ATEXIT
+
+/* Define to 1 if you have the <fcntl.h> header file. */
+#undef HAVE_FCNTL_H
+
+/* Define to 1 if you have the `getpt' function. */
+#undef HAVE_GETPT
+
+/* Define to 1 if you have the <grp.h> header file. */
+#undef HAVE_GRP_H
+
+/* Define to 1 if you have the <inttypes.h> header file. */
+#undef HAVE_INTTYPES_H
+
+/* Define to 1 if you have the <lastlog.h> header file. */
+#undef HAVE_LASTLOG_H
+
+/* Define to 1 if you have the <libc.h> header file. */
+#undef HAVE_LIBC_H
+
+/* Define to 1 if you have the <memory.h> header file. */
+#undef HAVE_MEMORY_H
+
+/* Define to 1 if you have the `seteuid' function. */
+#undef HAVE_SETEUID
+
+/* Define to 1 if you have the `setutent' function. */
+#undef HAVE_SETUTENT
+
+/* Define to 1 if you have the <stdarg.h> header file. */
+#undef HAVE_STDARG_H
+
+/* Define to 1 if you have the <stdint.h> header file. */
+#undef HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdlib.h> header file. */
+#undef HAVE_STDLIB_H
+
+/* Define to 1 if you have the <strings.h> header file. */
+#undef HAVE_STRINGS_H
+
+/* Define to 1 if you have the <string.h> header file. */
+#undef HAVE_STRING_H
+
+/* Define to 1 if you have the <sys/byteorder.h> header file. */
+#undef HAVE_SYS_BYTEORDER_H
+
+/* Define to 1 if you have the <sys/ioctl.h> header file. */
+#undef HAVE_SYS_IOCTL_H
+
+/* Define to 1 if you have the <sys/select.h> header file. */
+#undef HAVE_SYS_SELECT_H
+
+/* Define to 1 if you have the <sys/sockio.h> header file. */
+#undef HAVE_SYS_SOCKIO_H
+
+/* Define to 1 if you have the <sys/stat.h> header file. */
+#undef HAVE_SYS_STAT_H
+
+/* Define to 1 if you have the <sys/time.h> header file. */
+#undef HAVE_SYS_TIME_H
+
+/* Define to 1 if you have the <sys/types.h> header file. */
+#undef HAVE_SYS_TYPES_H
+
+/* Define to 1 if you have <sys/wait.h> that is POSIX.1 compatible. */
+#undef HAVE_SYS_WAIT_H
+
+/* Define to 1 if you have the <termios.h> header file. */
+#undef HAVE_TERMIOS_H
+
+/* Define to 1 if you have the <unistd.h> header file. */
+#undef HAVE_UNISTD_H
+
+/* Define to 1 if you have the `unsetenv' function. */
+#undef HAVE_UNSETENV
+
+/* Define to 1 if you have the <utmpx.h> header file. */
+#undef HAVE_UTMPX_H
+
+/* Define if struct utmp/utmpx contains ut_host */
+#undef HAVE_UTMP_HOST
+
+/* Define to 1 if you have the `wait3' system call. Deprecated, you should no
+   longer depend upon `wait3'. */
+#undef HAVE_WAIT3
+
+/* Define if you want KANJI support */
+#undef KANJI
+
+/* Define if you don't want support for the backspace key */
+#undef NO_BACKSPACE_KEY
+
+/* Define if you don't want support for the (non-keypad) delete key */
+#undef NO_DELETE_KEY
+
+/* Use wheel events (button4 and button5) to scroll */
+#undef NO_MOUSE_WHEEL
+
+/* Define if you don't want any resources read */
+#undef NO_RESOURCES
+
+/* Define if you want to use your system's memset() */
+#undef NO_RMEMSET
+
+/* Define if you want continual scrolling on when you keep the scrollbar
+   button pressed */
+#undef NO_SCROLLBAR_BUTTON_CONTINUAL_SCROLLING
+
+/* Disable the secondary screen (Esc(47h) / Esc(47l)) */
+#undef NO_SECONDARY_SCREEN
+
+/* Define is setlocale (defined to Xsetlocale) doesn't work */
+#undef NO_SETLOCALE
+
+#undef NO_XSETLOCALE
+
+/* Define if Xlocale support doesn't work */
+#undef NO_XLOCALE
+
+#undef USE_XIM
+
+/* Define to use old rxvt (ver 2.20 and before) style selection, not xterm
+   style. */
+#undef OLD_SELECTION
+
+/* Define to use old word selection (double click) style for you older users
+   */
+#undef OLD_WORD_SELECTION
+
+/* Define to the address where bug reports for this package should be sent. */
+#undef PACKAGE_BUGREPORT
+
+/* Define to the full name of this package. */
+#undef PACKAGE_NAME
+
+/* Define to the full name and version of this package. */
+#undef PACKAGE_STRING
+
+/* Define to the one symbol short name of this package. */
+#undef PACKAGE_TARNAME
+
+/* Define to the version of this package. */
+#undef PACKAGE_VERSION
+
+/* Define if you need function prototypes */
+#undef PROTOTYPES
+
+/* Define as the return type of signal handlers (`int' or `void'). */
+#undef RETSIGTYPE
+
+/* Defines 16 bit wide type */
+#undef RINT16T
+
+/* Defines 32 bit wide type */
+#undef RINT32T
+
+/* obscure data type */
+#undef RINTPT
+
+/* Defines unsigned 16 bit wide type */
+#undef RUINT16T
+
+/* Defines unsigned 32 bit wide type */
+#undef RUINT32T
+
+/* obscure data type */
+#undef RUINTPT
+
+/* Set TERMINFO value to the value given by configure */
+#undef RXVT_TERMINFO
+
+/* Define location of utmp/utmpx */
+#undef RXVT_UTMP_FILE
+
+/* Define location of wtmp/wtmpx */
+#undef RXVT_WTMP_FILE
+
+/* Define if you want Shaped Extension support */
+#undef SHAPE
+
+/* The size of a `char', as computed by sizeof. */
+#undef SIZEOF_CHAR
+
+/* The size of a `int', as computed by sizeof. */
+#undef SIZEOF_INT
+
+/* The size of a `int *', as computed by sizeof. */
+#undef SIZEOF_INT_P
+
+/* The size of a `long', as computed by sizeof. */
+#undef SIZEOF_LONG
+
+/* The size of a `short', as computed by sizeof. */
+#undef SIZEOF_SHORT
+
+/* Define to 1 if you have the ANSI C header files. */
+#undef STDC_HEADERS
+
+/* Set TERM to the value given by configure */
+#undef TERMENV
+
+/* Define if you need Thai language support */
+#undef THAI
+
+/* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
+#undef TIME_WITH_SYS_TIME
+
+/* Define if you want to have a transparent background */
+#undef TRANSPARENT
+
+/* Define location of ttys/ttytab */
+#undef TTYTAB_FILENAME
+
+/* Define if you want tty's to be setgid() to the `tty' group */
+#undef TTY_GID_SUPPORT
+
+/* Define if you want to use XGetDefault instead of our internal version which
+   only reads ~/.Xdefaults */
+#undef USE_XGETDEFAULT
+
+/* Define if you want to have utmp/utmpx support */
+#undef UTMP_SUPPORT
+
+/* Define if you want to have wtmp support when utmp/utmpx is enabled */
+#undef WTMP_SUPPORT
+
+/* Define to 1 if the X Window System is missing or not being used. */
+#undef X_DISPLAY_MISSING
+
+/* Define if you want chinese support */
+#undef ZH
+
+/* Define to 1 if on AIX 3.
+   System headers sometimes define this.
+   We just want to avoid a redefinition error message.  */
+#ifndef _ALL_SOURCE
+# undef _ALL_SOURCE
+#endif
+
+/* GNU source */
+#undef _GNU_SOURCE
+
+/* Define to empty if `const' does not conform to ANSI C. */
+#undef const
+
+/* Define to `int' if <sys/types.h> doesn't define. */
+#undef gid_t
+
+/* Define to `__inline__' or `__inline' if that's what the C compiler
+   calls it, or to nothing if 'inline' is not supported under any name.  */
+#ifndef __cplusplus
+#undef inline
+#endif
+
+/* Define to `int' if <sys/types.h> does not define. */
+#undef mode_t
+
+/* Define to `int' if <sys/types.h> does not define. */
+#undef pid_t
+
+/* Define to `int' if <sys/types.h> doesn't define. */
+#undef uid_t

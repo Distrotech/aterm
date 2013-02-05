@@ -1,0 +1,741 @@
+dnl# -*- sh -*-
+dnl#
+dnl# $Id: configure.in,v 1.19 2007/08/01 17:45:34 vae Exp $
+dnl#
+dnl# Process this file with autoconf to produce a configure script.
+dnl#
+
+AC_INIT(aterm,1.00.01,as-bugs@afterstep.org,aterm.tar)
+AC_CONFIG_AUX_DIR(autoconf)
+AC_CONFIG_HEADER(config.h:autoconf/config.h.in)
+
+VERSION=$PACKAGE_VERSION
+VERSION_MAJOR="1"
+DATE="01 August 2007"
+LSMDATE="01Aug07"
+
+
+dnl ATERM version
+echo "#define VERSION \"$VERSION\"" > ${srcdir}/src/version.h
+echo "#define DATE \"$DATE\"" >> ${srcdir}/src/version.h
+
+AC_SUBST(VERSION)
+AC_SUBST(DATE)
+AC_SUBST(LSMDATE)
+
+echo "configuring for aterm $VERSION"
+
+MALLOC_TYPE=S
+
+dnl# --------------------------------------------------------------------------
+dnl# CHECKING COMMAND LINE OPTIONS
+dnl# --------------------------------------------------------------------------
+AC_ARG_ENABLE(utmp,  [  --enable-utmp           enable utmp/utmpx support],
+        [if test x$enableval = xyes; then 
+                AC_DEFINE(UTMP_SUPPORT,1,[Define if you want to have utmp/utmpx support]) 
+                utmp_support=yes 
+         fi])
+
+AC_ARG_ENABLE(wtmp,  [  --enable-wtmp           enable wtmp support if you have utmp/utmpx support],
+        [if test x$enableval = xyes; then  
+                AC_DEFINE(WTMP_SUPPORT,1,[Define if you want to have wtmp support when utmp/utmpx is enabled]) 
+            wtmp_support=yes 
+         fi])
+
+AC_ARG_ENABLE(kanji,  [  --enable-kanji          enable kanji support],
+  [if test x$enableval = xyes; then  AC_DEFINE(KANJI,1,[Define if you want KANJI support]) fi])
+
+AC_ARG_ENABLE(big5,  [  --enable-big5           enable big5 support],
+  [if test x$enableval = xyes; then  AC_DEFINE(ZH,1,[Define if you want chinese support]) fi])
+
+AC_ARG_ENABLE(greek, [  --enable-greek          enable greek keyboard support],
+  [if test x$enableval = xyes; then    AC_DEFINE(GREEK_SUPPORT,1,[Define if you want support for Greek Elot-928 & IBM-437 keyboard]) fi])
+
+AC_ARG_ENABLE(thai,  [  --enable-thai           enable thai support],
+  [if test x$enableval = xyes; then    AC_DEFINE(THAI,1,[Define if you need Thai language support])  fi])
+
+AC_ARG_ENABLE(ttygid,[  --enable-ttygid         enable tty setting to group \"tty\" - use only if
+                          your system uses this type of security],
+  [if test x$enableval = xyes; then  AC_DEFINE(TTY_GID_SUPPORT,1,[Define if you want tty's to be setgid() to the `tty' group]) fi])
+
+AC_ARG_ENABLE(backspace-key,[  --disable-backspace-key disable handling of the backspace key],
+  [if test x$enableval = xno; then AC_DEFINE(NO_BACKSPACE_KEY,1,[Define if you don't want support for the backspace key]) fi])
+
+AC_ARG_ENABLE(delete-key,  [  --disable-delete-key    disable handling of the delete key],
+  [if test x$enableval = xno; then AC_DEFINE(NO_DELETE_KEY,1,[Define if you don't want support for the (non-keypad) delete key]) fi])
+
+AC_ARG_ENABLE(resources,  [  --disable-resources     disable all resource checking],
+  [if test x$enableval = xno; then  AC_DEFINE(NO_RESOURCES,1,[Define if you don't want any resources read]) fi])
+
+AC_ARG_ENABLE(xgetdefault,[  --enable-xgetdefault    enable resources via X instead of our small version],
+  [if test x$enableval = xyes; then AC_DEFINE(USE_XGETDEFAULT,1,[Define if you want to use XGetDefault instead of our internal version which only reads ~/.Xdefaults]) fi])
+
+AC_ARG_ENABLE(memset,  [  --disable-memset        disable memset() function, use your system's instead],
+  [if test x$enableval = xno; then  AC_DEFINE(NO_RMEMSET,1,[Define if you want to use your system's memset()]) fi])
+
+AC_ARG_ENABLE(swapscreen,  [  --disable-swapscreen    disable swap screen support],
+  [if test x$enableval = xno; then  AC_DEFINE(NO_SECONDARY_SCREEN,1,[Disable the secondary screen (Esc(47h) / Esc(47l))]) fi])
+
+AC_ARG_ENABLE(keepscrolling, [  --disable-keepscrolling disable continual scrolling on scrollbar arrow press],
+  [if test x$enableval = xno; then  AC_DEFINE(NO_SCROLLBAR_BUTTON_CONTINUAL_SCROLLING,1,[Define if you want continual scrolling on when you keep the scrollbar button pressed])  fi])
+
+AC_ARG_ENABLE(mousewheel,  [  --disable-mousewheel    disable scrolling via mouse wheel or buttons 4 & 5],
+  [if test x$enableval = xno; then  AC_DEFINE(NO_MOUSE_WHEEL,1,[Use wheel events (button4 and button5) to scroll])  fi])
+
+AC_ARG_ENABLE(old-selection, [  --enable-old-selection  enable v2.20 (and prior) mouse selection
+                          - this implies old word selection],
+  [if test x$enableval = xyes; then  AC_DEFINE(OLD_SELECTION,1,[Define to use old rxvt (ver 2.20 and before) style selection, not xterm style.]) fi])
+
+AC_ARG_ENABLE(old-wordselect,  [  --enable-old-wordselect enable v2.20 (and prior) mouse selection of words],
+  [if test x$enableval = xyes; then  AC_DEFINE(OLD_WORD_SELECTION,1,[Define to use old word selection (double click) style for you older users])  fi])
+
+AC_ARG_ENABLE(dmalloc,  [  --enable-dmalloc        enable Gray Watson's malloc - for debugging use],
+  [if test x$enableval = xyes; 
+   then MALLOC_TYPE=G
+        DEBUG=-DDEBUG_MALLOC
+        DLIB="-L/usr/local/lib -ldmalloc"
+        DINCLUDE=-I/usr/local/include
+        fi])
+
+AC_ARG_ENABLE(dlmalloc,  [  --enable-dlmalloc       enable Doug Lea's malloc - for production use
+                          - enable only one malloc package],
+  [if test x$enableval = xyes; then
+    MALLOC_TYPE=D
+    DEBUG=
+    DLIB="-L/usr/local/lib -ldlmalloc"
+    DINCLUDE=
+  fi])
+
+AC_ARG_WITH(term,[  --with-term=NAME        set the terminal to NAME (default \"xterm\")],
+  [if test x$withval != x; 
+      then AC_DEFINE_UNQUOTED(TERMENV,"$withval",[Set TERM to the value given by configure]) term="$withval" 
+   fi])
+
+AC_ARG_WITH(terminfo, [  --with-terminfo=PATH    set the path to the terminfo tree to PATH],
+  [if test x$withval != x; 
+        then  AC_DEFINE_UNQUOTED(RXVT_TERMINFO,"$withval",[Set TERMINFO value to the value given by configure]) terminfo="$withval" 
+   fi])
+  
+AC_ARG_WITH(libefence,		[  --with-libefence        compile with libefence to debug buffer overruns [no] ],with_libefence=$withval,with_libefence="")
+AC_ARG_ENABLE(gdb,		[  --enable-gdb            add gdb symbols (-g) (for debugging) [no] ],enable_gdb=$enableval,enable_gdb="no")
+AC_ARG_ENABLE(sigsegv,		[  --enable-sigsegv        enable internal handler of Segmentation Fault (for self-diagnostics) [yes] ],enable_sigsegv=$enableval,enable_sigsegv="yes")
+
+AC_ARG_ENABLE(transparency,     [  --enable-transparency enable transparent background [yes] ],enable_transparency=$enableval,  enable_transparency="yes")
+
+if test "x$enable_transparency" = "xyes";
+        then AC_DEFINE(TRANSPARENT,1,[Define if you want to have a transparent background]) transparent=yes;
+fi
+
+dnl# The following is passed directly to libAfterImage configure :
+
+AC_ARG_WITH(afterimage_config,  [  --with-afterimage-config=DIR  use libAfterImage config script in DIR], afterimage_config="$withval",afterimage_config=NO)
+AC_ARG_WITH(afterstep_config,   [  --with-afterstep-config=DIR   use libAfterStep config script in DIR], afterstep_config="$withval",afterstep_config=NO)
+
+dnl# --------------------------------------------------------------------------
+
+AC_AIX
+
+dnl# --------------------------------------------------------------------------
+
+AC_DEFINE(PROTOTYPES,1,Define if you need function prototypes)
+
+dnl# --------------------------------------------------------------------------
+dnl# Supply default CFLAGS, if not specified by `CFLAGS=flags ./configure'
+dnl#
+if test -z "$CFLAGS"; then
+    if test -z "$CCOPTS"; then
+	CCOPTS='-O'
+dnl>	if test "x$GCC" = xyes; then
+dnl>	    if test x$system = xLinux; then
+dnl>		CCOPTS="$CCOPTS "'-O2 -fno-strength-reduce'
+dnl>	    fi
+dnl>	fi
+    fi
+    CFLAGS="$CCOPTS"
+fi
+
+dnl# Checks for programs.
+dnl# AC_MAKE_SET
+
+AC_PROG_CC
+AC_PROG_CPP
+export CC
+export GCC
+export prefix
+export exec_prefix
+
+AC_PROG_INSTALL
+
+dnl# now we need to play abot with CFLAGS :
+
+dnl# Remove -g
+if test -n "`echo $CFLAGS' ' | grep '\-g ' 2> /dev/null`" ; then
+  CFLAGS=`echo "$CFLAGS " | sed "s/-g / /"`
+fi
+
+dnl# Add -Wall
+if test "x$GCC" = "xyes"; then
+  if test -z "`echo $CFLAGS | grep '\-Wall' 2> /dev/null`" ; then
+    CFLAGS="$CFLAGS -Wall"
+  fi
+fi
+
+dnl# Add -fPIC for IA64 compilation
+AC_CYGWIN
+if test "x$CYGWIN" = "x" -a "x$GCC" = "xyes" ; then
+  if test -z "`echo $CFLAGS | grep '\-fPIC' 2> /dev/null`" ; then
+    CFLAGS="$CFLAGS -fPIC"
+  fi
+fi
+
+dnl# Add -g
+if test "x$enable_gdb" = "xyes"; then
+  CFLAGS="$CFLAGS -g -DDEBUG_STRICT"
+  LDFLAGS="$LDFLAGS -g"
+else
+  CFLAGS="$CFLAGS -DNO_DEBUG_OUTPUT"
+fi
+
+dnl# Add -pg
+if test "x$enable_gprof" = "xyes"; then
+  CFLAGS="$CFLAGS -pg"
+  LDFLAGS="$LDFLAGS -pg"
+fi
+
+dnl# Add lots more warnings
+if test "x$enable_warn" = "xyes"; then
+  CFLAGS="$CFLAGS -Wuninitialized -Wwrite-strings -Wcast-qual -Wbad-function-cast -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wnested-externs -Wconversion -Wcomment -Wcast-align -Winline -Wshadow -Wredundant-decls -Wid-clash-31"
+fi
+
+if test "x$GCC" = "xyes"; then
+   LDFLAGS="$LDFLAGS -rdynamic"
+fi
+
+dnl# done with flags - lets export those for our children to use :
+export CFLAGS
+export LDFLAGS
+
+dnl# install checks :
+AC_PROG_INSTALL
+dnl# if the path to the install program is relative, make it absolute
+currdir=`pwd`
+INSTALL=`echo $INSTALL|sed -e "s@\^\.\.@${currdir}@" -e "s@^autoconf@${currdir}/autoconf@"`
+INSTALL_PROGRAM=`echo $INSTALL_PROGRAM|sed -e "s@\^\.\.@${currdir}@" -e "s@^autoconf@${currdir}/autoconf@"`
+INSTALL_DATA=`echo $INSTALL_DATA|sed -e "s@\^\.\.@${currdir}@" -e "s@^autoconf@${currdir}/autoconf@"`
+INSTALL_LIB=`echo $INSTALL_LIB|sed -e "s@\^\.\.@${currdir}@" -e "s@^autoconf@${currdir}/autoconf@"`
+
+export INSTALL
+export INSTALL_PROGRAM
+export INSTALL_DATA
+export INSTALL_LIB
+
+AC_PROG_RANLIB
+export RANLIB
+
+AC_PATH_PROG(RM, rm, rm)
+export RM
+AC_PATH_PROG(MV, mv, mv)
+export MV
+AC_PATH_PROG(CP, cp, cp)
+export CP
+AC_PATH_PROG(MKDIR, mkdir, mkdir)
+export MKDIR
+AC_PATH_PROG(PERL, perl, perl)
+export PERL
+AC_PATH_PROG(FIND, find, find)
+export FIND
+AC_PATH_PROG(XARGS, xargs, xargs)
+export XARGS
+AC_PATH_PROG(LDCONFIG, ldconfig, ldconfig, $PATH:/sbin:/usr/local/sbin)
+export LDCONFIG
+AC_PATH_PROG(SED, sed, sed)
+export SED
+
+
+dnl# check for wait is particularly nasty :
+AC_FUNC_WAIT3
+if test "x$ac_cv_func_wait3_rusage" = "xyes"; then
+	DO_HAVE_WAIT3=yes
+	export DO_HAVE_WAIT3
+fi
+
+dnl# Check for X :
+AC_PATH_XTRA
+x_libs="$LDFLAGS $X_LIBS $X_EXTRA_LIBS $X_PRE_LIBS"
+XEXTENTIONS_LIBS=
+AC_CHECK_LIB(X11, XOpenDisplay, [x_libs="-lX11 $x_libs"],,$x_libs)
+AC_CHECK_LIB(Xext, XShapeCombineMask, [XEXTENTIONS_LIBS="-lXext";AC_DEFINE(SHAPE,1,[Define if you want Shaped Extension support])],,$x_libs)
+
+PATH_XTRA_CHECKED=yes
+export PATH_XTRA_CHECKED
+export x_includes
+export X_CFLAGS
+export X_LIBS
+export X_EXTRA_LIBS
+export X_PRE_LIBS
+export CPP
+export have_x
+
+dnl# DONE WITH COMMON STUFF
+dnl# #############################################################
+dnl# first configuringlibraries :
+
+have_afterbase=no
+have_afterimage=no
+have_afterstep=no
+
+LIBAFTERIMAGE_CFLAGS=
+LIBAFTERSTEP_CFLAGS=
+AFTERIMAGE_LIBS=
+AFTERSTEP_LIB=
+
+
+dnl# if needed - check for external libAfterImage and libAfterBase :
+AC_MSG_CHECKING(if distributed as part of AfterStep)
+if test -d ../../libAfterBase && -d ../../libAfterImage && -d ../../libAfterStep ; then 
+	LIBAFTERIMAGE_CFLAGS=
+	LIBAFTERSTEP_CFLAGS=-I../../..
+	AFTERIMAGE_LIBS=-L../../../libAfterImage -L../../../libAfterBase -lAfterImage -lAfterBase `../../libAfterImage/afterimage-config --libs --external-only` 
+	AFTERSTEP_LIB=-L../../../libAfterStep -lAfterStep
+	have_afterbase=yes
+	have_afterimage=yes
+	have_afterstep=yes
+	AC_MSG_RESULT(yes)
+else
+	AC_MSG_RESULT(no)
+	AC_MSG_CHECKING(installed libAfterImage)
+	if test "$afterimage_config" = "NO" ; then 
+		if afterimage-config --version > /dev/null 2>&1 ; then 	
+			afterimage_config=afterimage-config
+		else
+			if test -x /usr/local/bin/afterimage-config; then 	    
+				afterimage_config=/usr/local/bin/afterimage-config 
+			fi
+		fi
+	else
+	    afterimage_config=$afterimage_config/afterimage-config
+	fi
+	if $afterimage_config --version > /dev/null 2>&1 ; then 
+		LIBAFTERIMAGE_CFLAGS=`$afterimage_config --cflags`
+		AFTERIMAGE_LIBS=`$afterimage_config --libs`
+		have_afterbase=`$afterimage_config --have-afterbase`
+		if test "x$AFTERIMAGE_LIBS" != "x"; then
+			have_afterimage=yes
+		fi
+	fi						
+
+	if test "x$have_afterimage" = "xyes"; then
+		AC_MSG_RESULT($AFTERIMAGE_LIBS)
+		AC_MSG_CHECKING(libAfterStep)
+		if test "$afterstep_config" = "NO" ; then 
+			if afterstep-config --version > /dev/null 2>&1 ; then 	
+				afterstep_config=afterstep-config
+			else
+				if test -x /usr/local/bin/afterstep-config; then 	    
+					afterstep_config=/usr/local/bin/afterstep-config
+				fi
+			fi
+		else
+		    afterstep_config=$afterstep_config/afterstep-config	
+		fi
+		if test "$afterstep_config" != "NO" ; then 
+			if $afterstep_config --version >/dev/null 2>&1 ; then 
+				LIBAFTERSTEP_CFLAGS=`$afterstep_config --cflags`
+				AFTERSTEP_LIBS=`$afterstep_config --libs`
+				have_afterbase=yes
+				if test "x$AFTERSTEP_LIBS" != "x"; then
+					have_afterstep=yes
+				fi
+			fi						
+		fi						       
+		if test "x$have_afterstep" = "xyes"; then
+			AC_MSG_RESULT($AFTERSTEP_LIBS)
+		else
+	    	    if test "$afterstep_config" != "NO" ; then 	
+		   AC_MSG_RESULT(afterstep-config not found in $afterstep_config)	
+		    else
+			AC_MSG_RESULT(afterstep-config not found)	 
+		    fi
+		fi
+	else
+		if test "$afterstep_config" != "NO" ; then 	
+			AC_MSG_RESULT(afterimage-config not found in $afterimage_config - no AfterStep integration available.)
+		else
+			AC_MSG_RESULT(afterimage-config not found - no AfterStep integration available.)
+		fi
+		AC_MSG_RESULT(AfterStep integration, and background image from file will not be available.)
+		AC_MSG_RESULT(To enable background image support you will need to download and install)
+		AC_MSG_RESULT(libAfterImage from ftp://ftp.afterstep.org/stable/libAfterImage/ and then re-run this script.)
+	fi
+
+fi
+
+
+if test "x$have_afterbase" = "xyes"; then
+        AC_DEFINE(HAVE_AFTERBASE,1,[Defined if AfterBase library is available]) 
+fi
+
+if test "x$have_afterimage" = "xyes"; then
+        AC_DEFINE(HAVE_AFTERIMAGE,1,[Defined if AfterImage library is available]) 
+	AC_DEFINE(BACKGROUND_IMAGE,1,[Defined if we can have background images]) 
+fi
+
+if test "x$have_afterstep" = "xyes"; then
+        AC_DEFINE(HAVE_AFTERSTEP,1,[Defined if AfterStep library is available, and MyStyles could be used to define background image]) 
+fi
+
+if test "x$LIBAFTERIMAGE_CFLAGS" = "x$LIBAFTERSTEP_CFLAGS"; then
+        LIBAFTERIMAGE_CFLAGS=
+fi
+
+AC_SUBST(LIBAFTERIMAGE_CFLAGS)
+AC_SUBST(LIBAFTERSTEP_CFLAGS)
+AC_SUBST(AFTERIMAGE_LIBS)
+AC_SUBST(AFTERSTEP_LIBS)
+
+dnl> end new Check for image libraries NNNNNNNNNNNNNNNNNNNNNNNNNN
+
+dnl# system hacks
+AC_ISC_POSIX
+
+dnl# --------------------------------------------------------------------------
+dnl# CHECKING FOR HEADER FILES
+dnl# --------------------------------------------------------------------------
+AC_HEADER_SYS_WAIT
+AC_CHECK_HEADERS( \
+	assert.h \
+	fcntl.h \
+	grp.h \
+	libc.h \
+	lastlog.h \
+	stdarg.h \
+	stdlib.h \
+	string.h \
+	termios.h \
+	unistd.h \
+	utmpx.h \
+	sys/byteorder.h \
+	sys/ioctl.h \
+	sys/select.h \
+	sys/sockio.h \
+	sys/time.h \
+)
+
+AC_HEADER_TIME
+
+AC_CHECK_FUNCS(getpt)
+
+AC_C_CONST
+AC_C_INLINE
+
+dnl> AC_HEADER_STDC	 dnl# skip this test, Sun always fails anyhow.
+
+dnl# --------------------------------------------------------------------------
+dnl# CHECKING FOR MISSING TYPEDEFS
+dnl# --------------------------------------------------------------------------
+dnl# Missing typedefs and replacements
+AC_TYPE_MODE_T
+dnl> AC_CHECK_TYPE(umode_t, int)
+dnl> AC_CHECK_TYPE(off_t, long)
+AC_TYPE_PID_T
+AC_TYPE_UID_T
+
+AC_CHECK_SIZEOF(char, 1)
+AC_CHECK_SIZEOF(short, 2)
+AC_CHECK_SIZEOF(int, 4)
+AC_CHECK_SIZEOF(long, 4)
+AC_CHECK_SIZEOF(int *, 4)
+dnl# ugly
+if test "$cross_compiling" = yes; then
+    echo "configure: warning: Define SIZEOF_* values in config.h manually"
+fi
+dnl# we could probably pull this info from Xmd.h
+dnl# and these tests are ugly: depending on specials
+if test $ac_cv_sizeof_char -ge 2; then
+  RINT16T=char
+  AC_DEFINE(RINT16T,  char,[Defines 16 bit wide type])
+  AC_DEFINE(RUINT16T, unsigned char,[Defines unsigned 16 bit wide type])
+else
+  if test $ac_cv_sizeof_short -ge 2; then
+    RINT16T=short
+    AC_DEFINE(RINT16T,  short,[Defines 16 bit wide type])
+    AC_DEFINE(RUINT16T, unsigned short,[Defines unsigned 16 bit wide type])
+  else
+    if test $ac_cv_sizeof_int -ge 2; then
+      RINT16T=int
+      AC_DEFINE(RINT16T,  int,[Defines 16 bit wide type])
+      AC_DEFINE(RUINT16T, unsigned int,[Defines unsigned 16 bit wide type])
+    else	dnl What a fantastic system ?
+      RINT16T=long
+      AC_DEFINE(RINT16T,  long,[Defines 16 bit wide type])
+      AC_DEFINE(RUINT16T, unsigned long,[Defines unsigned 16 bit wide type])
+    fi
+  fi
+fi
+if test $ac_cv_sizeof_char -ge 4; then
+  RINT32T=char
+  AC_DEFINE(RINT32T,  char,[Defines 32 bit wide type])
+  AC_DEFINE(RUINT32T, unsigned char,[Defines unsigned 32 bit wide type])
+else
+  if test $ac_cv_sizeof_short -ge 4; then
+    RINT32T=short
+    AC_DEFINE(RINT32T,  short,[Defines 32 bit wide type])
+    AC_DEFINE(RUINT32T, unsigned short,[Defines unsigned 32 bit wide type])
+  else
+    if test $ac_cv_sizeof_int -ge 4; then
+      RINT32T=int
+      AC_DEFINE(RINT32T,  int,[Defines 32 bit wide type])
+      AC_DEFINE(RUINT32T, unsigned int,[Defines unsigned 32 bit wide type])
+    else	dnl What a fantastic system ?
+      RINT32T=long
+      AC_DEFINE(RINT32T,  long,[Defines 32 bit wide type])
+      AC_DEFINE(RUINT32T, unsigned long,[Defines unsigned 32 bit wide type])
+    fi
+  fi
+fi
+if test $ac_cv_sizeof_char -eq $ac_cv_sizeof_int_p; then
+  RINTPT=char
+  AC_DEFINE(RINTPT,  char,[obscure data type])
+  AC_DEFINE(RUINTPT, unsigned char,[obscure data type])
+else
+  if test $ac_cv_sizeof_short -eq $ac_cv_sizeof_int_p; then
+    RINTPT=short
+    AC_DEFINE(RINTPT,  short,[obscure data type])
+    AC_DEFINE(RUINTPT, unsigned short,[obscure data type])
+  else
+    if test $ac_cv_sizeof_int -eq $ac_cv_sizeof_int_p; then
+      RINTPT=int
+      AC_DEFINE(RINTPT,  int,[obscure data type])
+      AC_DEFINE(RUINTPT, unsigned int,[obscure data type])
+    else	dnl what next? long long? quad?
+      RINTPT=long
+      AC_DEFINE(RINTPT,  long,[obscure data type])
+      AC_DEFINE(RUINTPT, unsigned long,[obscure data type])
+    fi
+  fi
+fi
+
+dnl# --------------------------------------------------------------------------
+dnl# CHECKING FOR LIBRARY FUNCTIONS
+dnl# --------------------------------------------------------------------------
+AC_TYPE_SIGNAL
+dnl> AC_FUNC_VPRINTF
+AC_CHECK_FUNCS( \
+	atexit \
+	unsetenv \
+	setutent \
+	seteuid \
+)
+
+dnl# check for host field in utmp structure
+
+AC_CACHE_CHECK(for host in utmp struct, rxvt_cv_struct_utmp_host,
+[AC_TRY_COMPILE([#include <sys/types.h>
+#ifdef HAVE_UTMPX_H
+#include <utmpx.h>
+#else
+#include <utmp.h>
+#endif], [
+#ifdef HAVE_UTMPX_H
+struct utmpx ut;
+#else
+struct utmp ut;
+#endif
+ut.ut_host;],
+  rxvt_cv_struct_utmp_host=yes, rxvt_cv_struct_utmp_host=no)])
+if test "$rxvt_cv_struct_utmp_host" = yes; then
+  AC_DEFINE(HAVE_UTMP_HOST,1,[Define if struct utmp/utmpx contains ut_host])
+fi
+
+dnl# find utmp
+if test "$ac_cv_header_utmpx_h" = yes; then
+  AC_CACHE_CHECK(where utmp is located, rxvt_cv_path_utmp,
+  [for utmp_file in   dnl
+    /var/run/utmp /var/adm/utmpx /etc/utmpx;
+  do
+    if test -f "$utmp_file" ; then
+      rxvt_cv_path_utmp=$utmp_file
+      break
+    fi
+  done
+  ])
+  AC_DEFINE(_GNU_SOURCE,1,[GNU source])
+else
+  AC_CACHE_CHECK(where utmp is located, rxvt_cv_path_utmp,
+  [for utmp_file in   dnl
+    /var/run/utmp /var/adm/utmp /etc/utmp /usr/etc/utmp /usr/adm/utmp;
+  do
+    if test -f "$utmp_file" ; then
+      rxvt_cv_path_utmp=$utmp_file
+      break
+    fi
+  done
+  ])
+fi
+if test "${rxvt_cv_path_utmp+set}" = set; then
+  AC_DEFINE_UNQUOTED(RXVT_UTMP_FILE, "$rxvt_cv_path_utmp",[Define location of utmp/utmpx])
+fi
+
+dnl# find wtmp
+AC_CACHE_CHECK(where wtmp is located, rxvt_cv_path_wtmp,
+[for wtmp_file in   dnl
+  /var/log/wtmp /var/adm/wtmp /etc/wtmp /usr/etc/wtmp /usr/adm/wtmp;
+do
+  if test -f "$wtmp_file" ; then
+    rxvt_cv_path_wtmp=$wtmp_file
+    break
+  fi
+done
+])
+if test "${rxvt_cv_path_wtmp+set}" = set; then
+  AC_DEFINE_UNQUOTED(RXVT_WTMP_FILE, "$rxvt_cv_path_wtmp",[Define location of wtmp/wtmpx])
+fi
+
+dnl# find ttys/ttytab
+AC_CACHE_CHECK(where ttys/ttytab is located, rxvt_cv_path_ttytab,
+[for ttys_file in   dnl
+  /etc/ttys /etc/ttytab;
+do
+  if test -f "$ttys_file" ; then
+    rxvt_cv_path_ttytab=$ttys_file
+    break
+  fi
+done
+])
+if test "${rxvt_cv_path_ttytab+set}" = set; then
+  AC_DEFINE_UNQUOTED(TTYTAB_FILENAME, "$rxvt_cv_path_ttytab",[Define location of ttys/ttytab])
+fi
+
+dnl# this is a really hack test for some basic Xlocale stuff
+SAVETHELIBS=$LIBS
+LIBS="$LIBS $X_LIBS $X_PRE_LIBS $X_EXTRA_LIBS -lX11 -lXmu"
+CFLAGS="$CFLAGS $X_CFLAGS"
+AC_CACHE_CHECK(for working Xlocale, rxvt_cv_func_xlocale,
+[AC_TRY_RUN(
+[#define X_LOCALE 1
+#include <X11/Xlocale.h>
+#include <X11/Xlib.h>
+main() {
+char *p;
+if ((p = XSetLocaleModifiers("@im=none")) != NULL && *p)
+exit (XSupportsLocale() ? 0 : 1);
+else
+exit (1);}
+],rxvt_cv_func_xlocale=yes, rxvt_cv_func_xlocale=no,
+AC_MSG_WARN([Define NO_XLOCALE in config.h manually]))])
+
+if test "${rxvt_cv_func_xlocale}" = no; then
+  AC_DEFINE(NO_XLOCALE,1,[Define if Xlocale support doesn't work])
+fi
+LIBS=$SAVETHELIBS
+
+AC_CACHE_CHECK(for working setlocale, rxvt_cv_func_xsetlocale,
+[AC_TRY_LINK([#define X_LOCALE 1
+#include <X11/Xlocale.h>],
+  [setlocale(LC_CTYPE, "");],
+  rxvt_cv_func_xsetlocale=yes, rxvt_cv_func_xsetlocale=no)])
+if test "${rxvt_cv_func_xsetlocale}" = no; then
+  AC_DEFINE(NO_XSETLOCALE)
+fi
+
+AC_CACHE_CHECK(for working plain setlocale, rxvt_cv_func_setlocale,
+  [AC_TRY_LINK([#include <locale.h>],
+  [setlocale(LC_CTYPE, "");],
+  rxvt_cv_func_setlocale=yes, rxvt_cv_func_setlocale=no)])
+if test x${rxvt_cv_func_setlocale} = xno; then
+  AC_DEFINE(NO_SETLOCALE,1,[Define is setlocale (defined to Xsetlocale) doesn't work])
+fi
+
+dnl> AC_CHECK_FUNCS(gettimeofday putenv select socket)
+
+CFLAGS=${CFLAGS--O}
+LDFLAGS=${LDFLAGS--O}
+
+CPPFLAGS="$CPPFLAGS"
+AC_SUBST(DEBUG)
+AC_SUBST(DLIB)
+AC_SUBST(DINCLUDE)
+AC_SUBST(CFLAGS)
+AC_SUBST(CPPFLAGS)
+AC_SUBST(LDFLAGS)
+AC_SUBST(X_LIBS)
+AC_SUBST(XEXTENTIONS_LIBS)
+AC_SUBST(LIBS)
+
+dnl# common parts of the Makefile
+MCOMMON=./autoconf/Make.common
+AC_SUBST_FILE(MCOMMON)
+
+AC_OUTPUT(autoconf/Make.common \
+Makefile \
+doc/Makefile \
+src/Makefile \
+src/graphics/Makefile \
+scripts/random_colors
+)
+
+chmod 755 scripts/random_colors
+
+echo "Configuration:
+
+  Aterm version:              ${VERSION} : ${DATE}
+  Source code location:       ${srcdir}
+  Install path:               ${prefix}/bin
+  Compiler:                   ${CC}
+  Compiler flags:             ${CFLAGS}"
+
+echo "
+  Background image support :"
+        echo "    AfterImage library:                 ${AFTERIMAGE_LIB}"
+        echo "    supporting image format libraries:  ${AFTERIMAGE_LIBS}"
+        if test "${have_afterstep}" = yes; then
+                echo   "       with AfterStep MyStyles support available"
+        else
+                echo   "       without AfterStep MyStyles support"
+        fi
+        echo
+
+
+if test "${enable_transparency}" = yes; then
+echo "  Transparency :		enabled"
+else
+echo "  Transparency :		disabled"
+fi
+
+
+if test "$MALLOC_TYPE" = S; then
+  echo "  malloc support:             system default"
+fi
+if test "$MALLOC_TYPE" = G; then
+  echo "  malloc support:             Gray Watson's dmalloc"
+fi
+if test "$MALLOC_TYPE" = D; then
+  echo "  malloc support:             Doug Lea's malloc"
+fi
+echo "
+The following are set in config.h
+"
+if test "${utmp_support}" != yes; then
+  echo "  utmp support:               disabled
+"
+else
+  echo "  utmp support:               enabled
+  utmp file:                  ${rxvt_cv_path_utmp}
+  wtmp file:                  ${rxvt_cv_path_wtmp}
+  ttys/ttytab file:           ${rxvt_cv_path_ttytab}
+"
+fi
+if test "x${term}" != x; then
+  echo "  set TERM to:                ${term}
+"
+fi
+if test "x${terminfo}" != x; then
+  echo "  set TERMINFO to:            ${terminfo}
+"
+fi
+echo "  Type of 16bit:               ${RINT16T}
+          32bit:               ${RINT32T}
+          pointer:             (same as) ${RINTPT}
+"
+echo "  *** Please check src/feature.h for further options ***
+"

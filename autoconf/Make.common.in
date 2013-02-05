@@ -1,0 +1,70 @@
+# autoconf/Make.common.in	 -*- Makefile -*-
+# release date (man), LSM date, version number/name, current maintainer
+# $Id: Make.common.in,v 1.3 2005/05/26 16:44:49 sasha Exp $
+DATE=@DATE@
+LSMDATE=@LSMDATE@
+VERSION=@VERSION@
+VERNAME=aterm-$(VERSION)#
+MAINT=Sasha Vasko#
+MAINTEMAIL=<sashav@users.sourceforge.net>#
+WEBMAINT=Sasha Vasko#
+WEBMAINTEMAIL=<sashav@users.sourceforge.net>#
+WEBPAGE=<http://aterm.sourceforge.net>#
+FTPSITENAME=ftp.afterstep.org#
+FTPSITEDIR=/apps/aterm#
+#-------------------------------------------------------------------------
+
+SHELL = /bin/sh
+
+# This variable makes it possible to move the installation root to another
+# directory. This is useful when you're creating a binary distribution
+# If empty, normal root will be used.
+# You can run eg. 'make install DESTDIR=/packages/rxvt-xx' to accomplish
+# that.
+# DESTDIR = /usr/local/X11/$(VERNAME)
+
+# Installation target directories & other installation stuff
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+binprefix =
+manprefix =
+bindir = @bindir@
+mandir = @mandir@/man1
+manext = 1
+
+# Tools & program stuff
+CC = @CC@
+CPP = @CPP@
+MV = @MV@
+RM = @RM@
+RMF = @RM@ -f
+CP = @CP@
+SED = @SED@
+INSTALL = @INSTALL@
+INSTALL_PROGRAM = @INSTALL@ -s -m 755
+INSTALL_DATA = @INSTALL@ -m 644
+
+# Flags & libs
+# add -DBINDIR=\""$(bindir)/"\" to CPPFLAGS, if we need to spawn a program
+
+CFLAGS = @CFLAGS@
+CPPFLAGS = @CPPFLAGS@
+LDFLAGS = @LDFLAGS@
+DEFS = @DEFS@
+LIBS = @LIBS@
+DINCLUDE = @DINCLUDE@
+DLIB = @DLIB@
+
+# X Include directory
+CFLAGS_LIBAFTERIMAGE=@LIBAFTERIMAGE_CFLAGS@
+CFLAGS_LIBAFTERSTEP=@LIBAFTERSTEP_CFLAGS@
+XINC = @X_CFLAGS@
+
+LIB_AFTERSTEP	= @AFTERSTEP_LIBS@
+LIBS_AFTERIMAGE = @AFTERIMAGE_LIBS@
+
+# extra libraries needed by X on some systems, X library location
+XLIB = $(LIB_AFTERSTEP) $(LIBS_AFTERIMAGE) @LIBS@ @X_LIBS@ @X_PRE_LIBS@ @X_EXTRA_LIBS@ -lX11 @XEXTENTIONS_LIBS@
+
+# End of common section of the Makefile
+#-------------------------------------------------------------------------

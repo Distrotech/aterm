@@ -1,0 +1,64 @@
+Begin3
+Title:		aterm
+Version:	1.0.0
+Entered-date:	05Jul05
+
+Description:	<http://aterm.sourceforge.net>
+		aterm is based upon rxvt v.2.4.8 with add ons of 
+		Alfredo Kojima's NeXT-ish scrollbars. Fast transparency 
+		functionality, background lightening/darkening or/and 
+		tinting(coloring). Original idea of using ParentRelative
+		transparency mode belongs to Alfredo also, although code 
+		has been mostly reworked. It can also be integrated with
+		AfterStep libasimage for pixmap loading from various formats.
+		
+		Rxvt is an 8-bit clean, colour xterm replacement that uses
+		significantly less memory than a conventional xterm, mostly
+		since it doesn't support toolkit configurability or Tek
+		graphics, but also since features can be removed at
+		compile-time to reflect your needs.  Some rxvt features
+		(compilation dependent): ANSI-color, bold/blink attributes
+		modify foreground/background colours, scrollbars with arrow
+		buttons, kanji and greek support, printer-pipe, XPM, JPEG and
+		PNG backgrounds with on-the-fly scaling, user-definable menus.
+
+Keywords:	rxvt colour color kanji xterm X11 vt100 terminal-emulator
+		xbiff xpm menu aterm AfterStep
+
+Author:		* John Bovey [Univ. Kent at Canterbury] was the creator of
+		  the original xvt.
+
+		* Rob Nation [Lockheed] re-wrote most of xvt to make a
+		  substantiallly enhanced version called rxvt (Rob's xvt).
+
+		* Mark Olesen [Queen's Univ. at Kingston] made various
+		  improvements and cleanups. 
+		  Coordinated development, versions 2.11 - 2.21
+
+		* Oezguer Kesim [FU Berlin] 
+		  Coordinated development, versions 2.21a - 2.4.5
+
+		* Geoff Wing rewrote much of the screen refreshing routines
+		  and mouse selection.
+		  Coordinated development, versions 2.4.6 - 
+  
+		* Alfredo Kojima added NeXT-ish scrollbars and fast transparency
+		
+		* Sasha Vasko branched aterm - rewrote imaging code, 
+		  other maintenance.
+		
+		* Ethan Fischer - contributed fast shading code to 0.3.3.
+		
+		* Rafal Wierzbicki <rafal@mcss.mcmaster.ca> - support for Unix98 
+		  ptys with linux-2.2.x and glibc-2.1
+		
+Maintained-by:	Sasha Vasko <sashav@users.sourceforge.net> Project Coordinator
+
+Original-site:	ftp.afterstep.org /apps/aterm
+		aterm-1.0.0.tar.gz
+
+Platforms:	requires X11 installed
+
+Copying-policy:	GPL
+
+End

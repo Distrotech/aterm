@@ -1,0 +1,715 @@
+.TH "ATERM" "1" "05 July 05" "X Version 11" "X Tools" 
+.SH "NAME" 
+aterm (Afterstep XVT) \- a VT102 emulator for the X window system
+.PP 
+.SH "SYNOPSIS" 
+.PP 
+\fBaterm\fP [options] [-e command [ args ]]
+.PP 
+.SH "DESCRIPTION" 
+.PP 
+\fBaterm\fP, version \fB1\&.0\&.0\fP, is a colour vt102 terminal emulator,
+based on \fIrxvt\fP 2\&.4\&.8 with Alfredo Kojima\'s additions of fast transparency,
+intended as an \fIxterm\fP(1) replacement for users who do not require
+features such as Tektronix 4014 emulation and toolkit-style configurability\&.
+As a result, \fBaterm\fP uses much less swap space -- a significant
+advantage on a machine serving many X sessions\&.
+.PP 
+It was created with \fBAfterStep\fP Window Manger users in mind, but is not tied 
+to any libraries, and can be used anywhere\&.
+.PP 
+.PP 
+.SH "OPTIONS" 
+.PP 
+The \fBaterm\fP options (mostly a subset of \fIxterm\fP\'s) are listed below\&.
+In keeping with the smaller-is-better philosophy, options may be eliminated
+or default values chosen at compile-time, so options and defaults listed
+may not accurately reflect the version installed on your system\&.
+.PP 
+Note that \fBaterm\fP permits the resource name to be used as a long-option
+(--/++ option) so the potential command-line options are far greater than
+those listed\&.
+For example: `aterm --loginShell --color1 Orange\'\&.
+.PP 
+.IP "\fB-help\fP, \fB--help\fP" 
+Print out a message describing available options\&.
+.IP "\fB-version\fP, \fB--version\fP" 
+Print out a version with/without list of available options\&.
+.IP "\fB-display\fP \fIdisplayname\fP" 
+Attempt to open a window on the named X display (\fB-d\fP still
+respected)\&.  In the absence of this option, the display specified
+by the \fBDISPLAY\fP environment variable is used\&.
+.IP "\fB-geometry\fP \fIgeom\fP" 
+Window geometry (-g still respected);
+resource \fBgeometry\fP\&.
+.IP "\fB-rv\fP|\fB+rv\fP" 
+Turn on/off simulated reverse video;
+resource \fBreverseVideo\fP\&.
+.IP "\fB-bg\fP \fIcolour\fP" 
+Window background colour;
+resource \fBbackground\fP\&.
+.IP "\fB-fg\fP \fIcolour\fP" 
+Window foreground colour;
+resource \fBforeground\fP\&.
+.IP "\fB-pixmap:\fP \fIfile[;geom]\fP" 
+Specify image file for the background and also optionally specify 
+geometry of the image to be cut out of original image, to be used
+as background, with a geometry string\&.  Note you may need to add 
+quotes to avoid special shell interpretation of the `;\' in the 
+command-line;
+resource \fBbackgroundPixmap\fP\&.
+.IP "\fB-mst:\fP \fIname\fP" 
+Specify the name of the Afterstep MyStyle to be used as the base of
+aterm\'s look\&. ForeColor, BackColor, Font, BackPixmap (all texture 
+options) will be used from MyStyle definition, unless some other 
+command line option is specifyed for the same setting\&. 
+For example -fn will override MyStyle Font\&. This is available only 
+if used with AfterStep 1\&.9\&.28 or later and if compiled with AfterStep 
+libraries support ( --enable-afterstep-lib)\&.
+resource \fBMyStyle\fP\&.
+.IP "\fB-tr\fP|\fB+tr\fP" 
+Turn on/off pseudo transparency mode\&. In this mode \fBaterm\fP
+will use part of root background as it\'s own background, emulating
+see-through effect;
+resource \fBtransparent\fP\&.
+.IP "\fB-trsb\fP|\fB+trsb\fP" 
+Turn on/off pseudo transparent scrollbar\&. Works the same as -tr;
+resource \fBtranspscrollbar\fP\&.
+.IP "\fB-tint\fP \fIcolor\fP" 
+Turn on pseudo transparency background tinting\&. Tinting can be done
+fast and slow way\&. In fast way it will be done by combining of background
+color with tinting color using logical function\&. This function defaults
+to AND, and it can be changed using \fB-tinttype\fP option - see below\&.
+In general solid colors like Blue, Red, Green, Cyan, Magenta, Yellow 
+are good, but you should experiment with it for each background you have\&.
+True tinting is more memory and CPU hungry - tinted copy of background 
+image will be created every time you move/resize window\&. It alows for more 
+smooth tinting thou\&.
+You need to build it with \fB--enable-transparency=yes\fP or 
+\fB--enable-background-imageyes\fP option, to be able to use this feature\&.
+resource \fBtinting\fP\&.	
+.IP "\fB-sh\fP \fIamount\fP" 
+This option allows for darkening/lightening of the background image
+\fIamount\fP is the %value of the desired brightness, where 100 is the 
+original\&.
+if \fIamount\fP is less then 100 - image will be darkened\&.
+if \fIamount\fP is less then 0 or more then 100 - image will be lightened\&.
+Lightening can cause some strange looking effects if applied on bright image\&.
+This option causes aterm to create shaded/lightened copy of the background - 
+it\'s more memory cosuming as the result\&. It does not make much difference,
+though, if applied on non transparent background image\&. 
+resource \fBshading\fP\&.	
+.IP "\fB-fade\fP \fIamount\fP" 
+This option allows for darkening/lightening of colors when aterm is 
+loosing focus\&.
+\fIamount\fP is the %value of the desired brightness, where 100 is the 
+original\&.
+if \fIamount\fP is less then 100 - colors will be darkened\&.
+if \fIamount\fP is less then 0 or more then 100 - colors will be lightened\&.
+Lightening can cause some strange looking effects if applied on bright colors\&.
+This option causes aterm to use more colors, as the result it is disabled by
+default\&. Use --enable-fading \&./configure option to enable it\&. 
+resource \fBfading\fP\&.	
+.IP "\fB-bgtype\fP \fItype\fP" 
+Specify type of the transformation to be performed on background 
+image\&. Possible types are :
+\fBtile\fP - plain vanilla tiling of the image\&.
+\fBscale\fP - original image will be scaled to the aterm\'s size, every
+time you resize window\&.
+\fBscalev\fP - original image will be scaled to the aterm\'s height only,
+every time you resize window\&.
+\fBscaleh\fP - original image will be scaled to the aterm\'s width only,
+every time you resize window\&.
+\fBcenter\fP - original image will be centered in aterm\'s window\&.
+\fBnotile\fP - background color will be padded to image\'s right/bottom 
+to make it the same size as window is\&. 
+\fBnotileh\fP - background color will be padded to image\'s right 
+to make it the same width as window is\&. 
+\fBnotilev\fP - background color will be padded to image\'s bottom 
+to make it the same height as window is\&. 	
+\fBcut\fP - aterm background will be cut out of the source image,
+as if this source image was tiled across the root window\&. The
+portion of the image that lies underneath of window will be used\&. 	
+If AfterStep Pager, asetroot or Esetroot where used to set the root 
+image, then this option can be used in conjunction with -tr option\&.
+In this case it will do mentioned transformations to the root pixmap\&.
+and use it as aterm\'s background\&.  
+resource \fBbackgroundType\fP\&.
+.IP "\fB-txttype\fP \fItype\fP" 
+Allows you to specify logical function to be used when displaying 
+text\&. That will cause aterm to logically combine text with
+background pixels\&. That only works with transparent background 
+and background image\&. Possible values are :
+\fIand\fP, \fIandReverse\fP, \fIandInverted\fP, \fIxor\fP, \fIor\fP, \fInor\fP,
+\fIinvert\fP, \fIequiv\fP, \fIinvert\fP, \fIorReverse\fP, \fIorInverted\fP, 
+\fInand\fP;
+resource \fBtextType\fP\&.
+.IP "\fB-tinttype\fP \fItype\fP" 
+Allows you to specify logical function to be used when tinting 
+transparent background\&. That will cause aterm to logically combine
+text with background pixels\&. NOTE: If shading option is used, 
+or background image is specifyed - \fItrue\fP type will always be used\&.
+That works with bpth transparent background and background image\&. 
+Possible values are :
+.IP 
+Fast tinting options :
+\fIand\fP, \fIandReverse\fP, \fIandInverted\fP, \fIxor\fP, \fIor\fP, \fInor\fP,
+\fIinvert\fP, \fIequiv\fP, \fIinvert\fP, \fIorReverse\fP, \fIorInverted\fP, 
+\fInand\fP, 
+.IP 
+Slow tinting:
+\fItrue\fP - will do "true" tinting - that means that background pixel\'s 
+RGB components will be decreased proportionaly to the RGB components
+of specified tinting color;
+resource \fBtintingType\fP\&.
+.IP "\fB-cr\fP \fIcolour\fP" 
+The cursor colour;
+resource \fBcursorColor\fP\&.
+.IP "\fB-pr\fP \fIcolour\fP" 
+The mouse pointer colour;
+resource \fBpointerColor\fP\&.
+.IP "\fB-bd\fP \fIcolour\fP" 
+The colour of the border between the xterm scrollbar and the text;
+resource \fBborderColor\fP\&.
+.IP "\fB-bl\fP \fInumber\fP" 
+This option specifies that aterm should askwindow manager to not have 
+a border around term's window;
+resource \fBborderLess\fP\&.
+.IP "\fB-bw\fP \fInumber\fP" 
+This option specifies the width in pixels of the border surrounding
+the window;
+resource \fBborderWidth\fP\&.
+.IP "\fB-fn\fP \fIfontname\fP" 
+Main normal text font;
+resource \fBfont\fP\&.
+.IP "\fB-fb\fP \fIfontname\fP" 
+Main bold text font;
+resource \fBboldFont\fP\&.
+.IP "\fB-fm\fP \fIfontname\fP" 
+Main multicharacter font;
+resource \fBmfont\fP\&.
+.IP "\fB-ib\fP \fIwidth\fP" 
+Width of the internal border in pixels;
+resource \fBinternalBorder\fP\&.
+.IP "\fB-km\fP \fImode\fP" 
+Multiple-character font-set encoding mode;
+\fBeucj\fP: EUC Japanese encoding\&.
+\fBsjis\fP: Shift JIS encoding;
+resource \fBmultichar_encoding\fP\&.
+.IP "\fB-grk\fP \fImode\fP" 
+Greek keyboard translation;
+\fBiso\fP: ISO-8859 mapping\&.
+\fBibm\fP: IBM-437 mapping;
+resource \fBgreek_keyboard\fP\&.
+.IP "\fB-name\fP \fIname\fP" 
+Specify the application name under which resources
+are to be obtained, rather than the default executable file name\&.
+Name should not contain `\&.\' or `*\' characters\&.
+Also sets the icon and title name\&.
+.IP "\fB-ls\fP|\fB+ls\fP" 
+Start as a login-shell/sub-shell;
+resource \fBloginShell\fP\&.
+.IP "\fB-ut\fP|\fB+ut\fP" 
+Inhibit/enable writing a utmp entry;
+resource \fButmpInhibit\fP\&.
+.IP "\fB-vb\fP|\fB+vb\fP" 
+Turn on/off visual bell on receipt of a bell character;
+resource \fBvisualBell\fP\&.
+.IP "\fB-sb\fP|\fB+sb\fP" 
+Turn on/off scrollbar;
+resource \fBscrollBar\fP\&.
+.IP "\fB-si\fP|\fB+si\fP" 
+Turn on/off scroll-to-bottom on TTY output inhibit;
+resource \fBscrollTtyOutput\fP has opposite effect\&.
+.IP "\fB-sk\fP|\fB+sk\fP" 
+Turn on/off scroll-to-bottom on keypress;
+resource \fBscrollKey\fP\&.
+.IP "\fB-sr\fP|\fB+sr\fP" 
+Put scrollbar on right/left;
+resource \fBscrollBar_right\fP\&.
+.IP "\fB-st\fP|\fB+st\fP" 
+Display scrollbar without/with a trough;
+resource \fBscrollBar_floating\fP\&.
+.IP "\fB-iconic\fP" 
+Start iconified, if the window manager supports that option\&.
+.IP "\fB-sl\fP \fInumber\fP" 
+Save \fInumber\fP lines in the scrollback buffer;
+resource \fBsaveLines\fP\&.
+.IP "\fB-tn\fP \fItermname\fP" 
+This option specifies the name of the terminal type to be set in the
+\fBTERM\fP environment variable\&. This terminal type must exist in the
+\fItermcap(5)\fP database and should have \fIli#\fP and \fIco#\fP entries;
+resource \fBtermName\fP\&.
+.IP "\fB-e\fP \fIcommand [arguments]\fP" 
+Run the command with its command-line arguments in the \fBaterm\fP
+window; also sets the window title and icon name to be the basename
+of the program being executed if neither \fI-title\fP (\fI-T\fP) nor
+\fI-n\fP are given on the command line\&.  If this option is used, it
+must be the last on the command-line\&.  If there is no \fB-e\fP option
+then the default is to run the program specified by the \fBSHELL\fP
+environment variable or, failing that, \fIsh(1)\fP\&.
+.IP "\fB-title\fP \fItext\fP" 
+Window title \fB-T\fP still respected); the default title is the
+basename of the program specified after the \ef3\e-e\efP option, if
+any, otherwise the application name;
+resource \fBtitle\fP\&.
+.IP "\fB-n\fP \fItext\fP" 
+Icon name; the default name is the basename of the program specified
+after the \ef3\e-e\efP option, if any, otherwise the application name;
+resource \fBiconName\fP\&.
+.IP "\fB-C\fP" 
+Capture system console messages\&.
+.IP 
+.SH "RESOURCES (available also as long-options)" 
+.PP 
+\fBaterm\fP accepts application defaults set in XAPPLOADDIR/aterm (compile-time
+defined: usually \fB/etc/X11/Xresources/aterm\fP) and resources set in
+\fB~/\&.Xdefaults\fP or \fB~/\&.Xresources\fP\&.  Note that when reading X resources,
+\fBaterm\fP recognizes two class names: \fBXTerm\fP and \fBAterm\fP\&.  The class name
+\fBXTerm\fP allows resources common to both \fBaterm\fP and \fIxterm\fP to be easily
+configured, while the class name \fBAterm\fP allows resources unique to \fBaterm\fP,
+notably colours and key-handling, to be shared between different \fBaterm\fP
+configurations\&.  If no resources are specified, suitable defaults will be
+used\&.  Command-line arguments can be used to override resource settings\&.  The
+following resources are allowed:
+.PP 
+.IP "\fBgeometry:\fP \fIgeom\fP" 
+Create the window with the specified X window geometry [default
+80x24];
+option \fB-geometry\fP\&.
+.IP "\fBbackground:\fP \fIcolour\fP" 
+Use the specified colour as the window\'s background colour [default
+White];
+option \fB-bg\fP\&.
+.IP "\fBforeground:\fP \fIcolour\fP" 
+Use the specified colour as the window\'s foreground colour [default
+Black];
+option \fB-fg\fP\&.
+.IP "\fBcolor\fP\fIn\fP\fB:\fP \fIcolour\fP" 
+Use the specified colour for the colour value \fIn\fP, where 0-7
+corresponds to low-intensity (normal) colours and 8-15 corresponds to
+high-intensity (bold = bright foreground, blink = bright
+background) colours\&.  The canonical names are as follows:
+0=black, 1=red, 2=green, 3=yellow, 4=blue, 5=magenta, 6=cyan, 7=white,
+but the actual colour names used are listed in the
+\fBCOLORS AND GRAPHICS\fP section\&.
+.IP "\fBcolorBD:\fP \fIcolour\fP" 
+Use the specified colour to display bold characters when the
+foreground colour is the default\&.
+.IP "\fBcolorUL:\fP \fIcolour\fP" 
+Use the specified colour to display underlined characters when the
+foreground colour is the default\&.
+.IP "\fBcursorColor:\fP \fIcolour\fP" 
+Use the specified colour for the cursor\&.  The default is to use the
+foreground colour;
+option \fB-cr\fP\&.
+.IP "\fBcursorColor2:\fP \fIcolour\fP" 
+Use the specified colour for the colour of the cursor text\&.  For this
+to take effect, \fBcursorColor\fP must also be specified\&.  The default
+is to use the background colour\&.
+.IP "\fBreverseVideo:\fP \fIboolean\fP" 
+\fBTrue\fP: simulate reverse video by foreground and background colours;
+option \fB-rv\fP,
+\fBFalse\fP: regular screen colours [default];
+option \fB+rv\fP\&.
+See note in \fBCOLORS AND GRAPHICS\fP section\&.
+.IP "\fBscrollColor:\fP \fIcolour\fP" 
+Use the specified colour for the scrollbar [default #B2B2B2]\&.
+.IP "\fBtroughColor:\fP \fIcolour\fP" 
+Use the specified colour for the scrollbar\'s trough area [default
+#969696]\&.
+.IP "\fBbackgroundPixmap:\fP \fIfile[;geom]\fP" 
+Use the specified image file, and cut the area defined by geometry
+string out of it\&. 
+.IP "\fBMyStyle:\fP \fIname\fP" 
+Specify the name of the Afterstep MyStyle to be used as the base of
+aterm\'s look\&. ForeColor, BackColor, Font, BackPixmap (all texture 
+options) will be used from MyStyle definition, unless some other 
+command line option is specifyed for the same setting\&. 
+For example resource font will override MyStyle Font\&. 
+This is available only if used with AfterStep 1\&.9\&.28 or later and 
+if compiled with AfterStep libraries support ( --enable-afterstep-lib)\&.
+.IP "\fBtransparent\fP" 
+Turn on/off pseudo transparency mode\&. In this mode \fBaterm\fP
+will use part of root background as it\'s own background, emulating
+see-through effect;
+.IP "\fBtinting:\fP \fIcolor\fP" 
+Turn on pseudo transparency background tinting\&. Tinting can be done
+fast and slow way\&. In fast way it will be done by combining of background
+color with tinting color using logical function\&. This function defaults
+to AND, and it can be changed using \fB-tinttype\fP option - see below\&.
+In general solid colors like Blue, Red, Green, Cyan, Magenta, Yellow 
+are good, but you should experiment with it for each background you have\&.
+True tinting is more memory and CPU hungry - tinted copy of background 
+image will be created every time you move/resize window\&. It alows for more 
+smooth tinting thou\&.
+You need to build it with \fB--enable-transparency=yes\fP or 
+\fB--enable-background-image=yes\fP option, to be able to use this feature\&.
+.IP 
+.IP "\fB-shading:\fP \fIamount\fP" 
+This option allows for darkening/lightening of the background image
+\fIamount\fP is the %value of the desired brightness, where 100 is the 
+original\&.
+if \fIamount\fP is less then 100 - image will be darkened\&.
+if \fIamount\fP is less then 0 or more then 100 - image will be lightened\&.
+Lightening can cause some strange looking effects if applied on bright image\&.
+This option causes aterm to create shaded/lightened copy of the background - 
+it\'s more memory cosuming as the result\&. It does not make much difference,
+though, if applied on non transparent background image\&. 
+.IP "\fBbackgroundType:\fP \fItype\fP" 
+Specify type of the transformation to be performed on background 
+image\&. Possible types are :
+\fBtile\fP - plain vanilla tiling of the image\&.
+\fBscale\fP - original image will be scaled to the aterm\'s size, every
+time you resize window\&.
+\fBscalev\fP - original image will be scaled to the aterm\'s height only,
+every time you resize window\&.
+\fBscaleh\fP - original image will be scaled to the aterm\'s width only,
+every time you resize window\&.
+\fBcenter\fP - original image will be centered in aterm\'s window\&.
+\fBnotile\fP - background color will be padded to image\'s right/bottom 
+to make it the same size as window is\&. 
+\fBnotileh\fP - background color will be padded to image\'s right 
+to make it the same width as window is\&. 
+\fBnotilev\fP - background color will be padded to image\'s bottom 
+to make it the same height as window is\&. 	
+\fBcut\fP - aterm background will be cut out of the source image,
+as if this source image was tiled across the root window\&. The
+portion of the image that lies underneath of window will be used\&. 	
+If AfterStep Pager, asetroot or Esetroot where used to set the root 
+image, then this option can be used in conjunction with -tr option\&.
+In this case it will do mentioned transformations to the root pixmap\&.
+and use it as aterm\'s background\&.  
+.IP "\fBtextType:\fP \fItype\fP" 
+Allows you to specify logical function to be used when displaying 
+text\&. That will cause aterm to logically combine text with
+background pixels\&. That only works with transparent background 
+and background image\&. Possible values are :
+\fIand\fP, \fIandReverse\fP, \fIandInverted\fP, \fIxor\fP, \fIor\fP, \fInor\fP,
+\fIinvert\fP, \fIequiv\fP, \fIinvert\fP, \fIorReverse\fP, \fIorInverted\fP, 
+\fInand\fP\&.
+.IP "\fBtintingType\fP \fItype\fP" 
+Allows you to specify logical function to be used when tinting 
+transparent background\&. That will cause aterm to logically combine
+text with background pixels\&. NOTE: If shading option is used, 
+or background image is specifyed - \fItrue\fP type will always be used\&.
+That works with bpth transparent background and background image\&. 
+Possible values are :
+.IP 
+Fast tinting options :
+\fIand\fP, \fIandReverse\fP, \fIandInverted\fP, \fIxor\fP, \fIor\fP, \fInor\fP,
+\fIinvert\fP, \fIequiv\fP, \fIinvert\fP, \fIorReverse\fP, \fIorInverted\fP, 
+\fInand\fP, 
+.IP 
+Slow tinting:
+\fItrue\fP - will do "true" tinting - that means that background pixel\'s 
+RGB components will be decreased proportionaly to the RGB components
+of specified tinting color\&.
+.IP 
+.IP "\fBmenu:\fP \fIfile[;tag]\fP" 
+Read in the specified menu file (note the `\&.menu\' extension is
+optional) and also optionally specify a starting tag to find\&.  See
+the reference documentation for details on the syntax for the menuBar\&.
+.IP "\fBpath:\fP \fIpath\fP" 
+Specify the colon-delimited search path for finding files (XPM and
+menus), in addition to the paths specified by the \fBRXVTPATH\fP and
+\fBPATH\fP environment variables\&.
+.IP "\fBfont:\fP \fIfontname\fP" 
+Select the main text font used [default 7x14];
+option \fB-fn\fP\&.
+.IP "\fBfont\fP\fIn\fP\fB:\fP \fIfontname\fP" 
+Specify the alternative font \fIn\fP\&.  The default font values: 
+.br 
+.RS 
+.IP 
+.TS 
+tab(`); 
+l l .
+\fBfont\fP: `\ 7x14 
+\fBfont1\fP: `\ 6x10 
+\fBfont2\fP: `\ 6x13 
+\fBfont3\fP: `\ 8x13 
+\fBfont4\fP: `\ 9x15 
+.TE 
+.RE 
+.IP 
+.IP "\fBboldFont:\fP \fIfontname\fP" 
+Specify the name of the bold font to use if \fBcolorBD\fP has not been
+specified and it is not possible to map the default foreground colour
+to colour 8-15 [default NONE]\&.  This font must be the same height and
+width as the normal font;
+option \fB-fb\fP\&.
+.IP "\fBmfont:\fP \fIfontname\fP" 
+Select the main multiple-character text font used [default k14];
+option \fB-fk\fP\&.
+.IP "\fBmfont\fP\fIn\fP\fB:\fP \fIfontname\fP" 
+Specify the alternative multiple-character font \fIn\fP\&.  If compiled
+for multiple-character fonts, the Roman and multiple-character font
+sizes should match\&.
+.IP "\fBmultichar_encoding:\fP \fImode\fP" 
+Set the encoding mode to be used when multicharacter encoding is
+received;
+\fBeucj\fP: EUC Japanese encoding [default for Kanji]\&.
+\fBsjis\fP: Shift JIS encoding\&.
+\fBbig5\fP: BIG5 encoding;
+option \fB-km\fP\&.
+.IP "\fBgreek_keyboard:\fP \fImode\fP" 
+Set the Greek keyboard translation mode to be used;
+\fBiso\fP: ISO-8859 mapping (elot-928) [default]\&.
+\fBibm\fP: IBM-437 mapping (DOS codepage 737);
+option \fB-grk\fP\&.
+Use \fBMode_switch\fP to toggle keyboard input\&.  For more details,
+see the distributed file \fBREADME\&.greek\fP\&.
+.IP "\fBtitle:\fP \fItext\fP" 
+Set window title string, the default title is the command-line
+specified after the \fB-e\fP option, if any, otherwise the application
+name;
+option \fB-title\fP\&.
+.IP "\fBiconName:\fP \fItext\fP" 
+Set the name used to label the window\'s icon or displayed in an icon
+manager window, it also sets the window\'s title unless it is
+explicitly set;
+option \fB-n\fP\&.
+.IP "\fBmapAlert:\fP \fIboolean\fP" 
+\fBTrue\fP: de-iconify (map) on receipt of a bell character\&.
+\fBFalse\fP: no de-iconify (map) on receipt of a bell character
+[default]\&.
+.IP "\fBvisualBell:\fP \fIboolean\fP" 
+\fBTrue\fP: use visual bell on receipt of a bell character;
+option \fB-vb\fP\&.
+\fBFalse\fP: no visual bell [default];
+option \fB+vb\fP\&.
+.IP "\fBloginShell:\fP \fIboolean\fP" 
+\fBTrue\fP: start as a login shell by prepending a `-\' to \fBargv[0]\fP
+of the shell;
+option \fB-ls\fP\&.
+\fBFalse\fP: start as a normal sub-shell [default];
+option \fB+ls\fP\&.
+.IP "\fButmpInhibit:\fP \fIboolean\fP" 
+\fBTrue\fP: inhibit writing record into the system log file \fButmp\fP;
+option \fB-ut\fP\&.
+\fBFalse\fP: write record into the system log file \fButmp\fP [default];
+option \fB+ut\fP\&.
+.IP "\fBprint-pipe:\fP \fIstring\fP" 
+Specify a command pipe for vt100 printer [default \fIlpr(1)\fP]\&.  Use
+\fBPrint\fP to initiate a screen dump to the printer and \fBCtrl-Print\fP
+or \fBShift-Print\fP to include the scrollback as well\&.
+.IP "\fBscrollBar:\fP \fIboolean\fP" 
+\fBTrue\fP: enable the scrollbar [default];
+option \fB-sb\fP\&.
+\fBFalse\fP: disable the scrollbar;
+option \fB+sb\fP\&.
+Note that the scrollbar type (with/without arrows) is compile-time
+selected\&.
+.IP "\fBsmallfont_key:\fP \fIkeysym\fP" 
+If enabled, use \fBAlt-\fP\fIkeysym\fP to toggle to a smaller font
+[default \fBAlt-<\fP]
+.IP "\fBbigfont_key:\fP \fIkeysym\fP" 
+If enabled, use \fBAlt-\fP\fIkeysym\fP to toggle to a bigger font
+[default \fBAlt->\fP]
+.IP "\fBsaveLines:\fP \fInumber\fP" 
+Save \fInumber\fP lines in the scrollback buffer [default 64];
+option \fB-sl\fP\&.
+.IP "\fBtermName:\fP \fItermname\fP" 
+Specifies the terminal type name to be set in the \fBTERM\fP
+environment variable;
+option \fB-tn\fP\&.
+.IP "\fBmeta8:\fP \fIboolean\fP" 
+\fBTrue\fP: handle Meta (Alt) + keypress to set the 8th bit\&.
+\fBFalse\fP: handle Meta (Alt) + keypress as an escape prefix [default]\&.
+.IP "\fBmodifier:\fP \fIstring\fP" 
+Set the Meta key to be enabled by modifier \fBMod1\fP, \fBMod2\fP, \fBMod3\fP,
+\fBMod4\fP or \fBMod5\fP\&.
+.IP "\fBbackspacekey:\fP \fIstring\fP" 
+The string to send when the backspace key is pressed\&.  If set to
+\fBDEC\fP or unset it will send \fBDelete\fP (code 127) or, if shifted,
+\fBBackspace\fP (code 8) - which can be reversed with the appropriate
+DEC private mode escape sequence\&.
+.IP "\fBdeletekey:\fP \fIstring\fP" 
+The string to send when the delete key (not the keypad delete key) is
+pressed\&.  If unset it will send the sequence traditionally associated
+with the \fBExecute\fP key\&.
+.IP "\fBcutchars:\fP \fIstring\fP" 
+The characters used as delimiters for double-click word selection\&. 
+The built-in default: 
+.br 
+\fBBACKSLASH `"\'&()*,;<=>?@[]{|}\fP
+.IP "\fBkeysym\&.\fP\fIsym\fP: \fIstring\fP" 
+Associate \fIstring\fP with keysym \fIsym\fP (\fB0xFF00 - 0xFFFF\fP)\&.  It
+may contain escape values (\ea: bell, \eb: backspace, \ee, \eE: escape,
+\en: newline, \er: return, \et: tab, \e000: octal number) or control
+characters (^?: delete, ^@: null, ^A \&.\&.\&.) and may enclosed with
+double quotes so that it can start or end with whitespace\&.  The
+intervening resource name \fBkeysym\&.\fP cannot be omitted\&.  This
+resource is only available when compiled with KEYSYM_RESOURCE\&.
+.SH "THE SCROLLBAR" 
+.PP 
+Lines of text that scroll off the top of the \fBaterm\fP window (resource:
+\fBsaveLines\fP) and can be scrolled back using the scrollbar or by keystrokes\&. 
+The normal \fBaterm\fP scrollbar has arrows and its behaviour is fairly
+intuitive\&.  The \fBxterm-scrollbar\fP is without arrows and its behaviour
+mimics that of \fIxterm\fP\&. When build with --enable-next-scroll \fBaterm\fP 
+will have NeXT-ish scrollbars\&. They look nicer and easier in use, but have
+slightly larger size\&. Their look and size can be tweaked at compile time 
+by modifying parameters in rxvt\&.h\&.
+.PP 
+Scroll down with \fBButton1\fP (\fBxterm-scrollbar\fP) or \fBShift-Next\fP\&.
+Scroll up with \fBButton3\fP (\fBxterm-scrollbar\fP) or \fBShift-Prior\fP\&.
+Continuous scroll with \fBButton2\fP\&.
+.SH "MOUSE REPORTING" 
+.PP 
+To temporarily override mouse reporting, for either the scrollbar or the
+normal text selection/insertion, hold either the Shift or the Meta (Alt) key
+while performing the desired mouse action\&.
+.PP 
+If mouse reporting mode is active, the normal scrollbar actions are disabled
+-- on the assumption that we are using a fullscreen application\&.
+Instead, pressing Button1 and Button3 sends
+\fBESC[6~\fP (Next) and \fBESC[5~\fP (Prior), respectively\&.
+Similarly, clicking on the up and down arrows sends \fBESC[A\fP (Up) and
+\fBESC[B\fP (Down), respectively\&.
+.SH "TEXT SELECTION AND INSERTION" 
+.PP 
+The behaviour of text selection and insertion mechanism is similar to
+\fIxterm\fP(1)\&.
+.PP 
+.IP "\fBSelection\fP:" 
+Left click at the beginning of the region, drag to the end of the
+region and release; Right click to extend the marked region;
+Left double-click to select a word; Left triple-click to select
+the entire line\&.
+.IP 
+.IP "\fBInsertion\fP:" 
+Pressing and releasing the Middle mouse button (or \fBShift-Insert\fP)
+in an \fBaterm\fP window causes the current text selection to be inserted
+as if it had been typed on the keyboard\&.
+.SH "CHANGING FONTS" 
+.PP 
+You can change fonts on-the-fly, which is to say cycle through the default
+font and others of various sizes, by using \fBShift-KP_Add\fP and
+\fBShift-KP_Subtract\fP\&.  Or, alternatively (if enabled) with
+\fBAlt->\fP and \fBAlt-<\fP, where the actual key
+can be selected using resources \fBsmallfont_key\fP/\fBbigfont_key\fP\&.
+.SH "LOGIN STAMP" 
+.PP 
+\fBaterm\fP tries to write an entry into the \fIutmp\fP(5) file so that it can be
+seen via the \fIwho(1)\fP command, and can accept messages\&.  To allow this
+feature, \fBaterm\fP must be installed setuid root on some systems\&.
+.SH "COLORS AND GRAPHICS" 
+.PP 
+If graphics support was enabled at compile-time, \fBaterm\fP can be queried
+with ANSI escape sequences and can address individual pixels instead of
+text characters\&.  Note the graphics support is still considered beta code\&.
+.PP 
+In addition to the default foreground and background colours, \fBaterm\fP
+can display up to 16 colours (8 ANSI colours plus high-intensity bold/blink
+versions of the same)\&.
+Here is a list of the colours with their \fBrgb\&.txt\fP names\&.
+.PP 
+.TS 
+tab(`); 
+l l l .
+\fBcolor0\fP `\ (black) `\ = Black 
+\fBcolor1\fP `\ (red) `\ = Red3 
+\fBcolor2\fP `\ (green) `\ = Green3 
+\fBcolor3\fP `\ (yellow) `\ = Yellow3 
+\fBcolor4\fP `\ (blue) `\ = Blue3 
+\fBcolor5\fP `\ (magenta) `\ = Magenta3 
+\fBcolor6\fP `\ (cyan) `\ = Cyan3 
+\fBcolor7\fP `\ (white) `\ = AntiqueWhite 
+\fBcolor8\fP `\ (bright black) `\ = Grey25 
+\fBcolor9\fP `\ (bright red) `\ = Red 
+\fBcolor10\fP `\ (bright green) `\ = Green 
+\fBcolor11\fP `\ (bright yellow) `\ = Yellow 
+\fBcolor12\fP `\ (bright blue) `\ = Blue 
+\fBcolor13\fP `\ (bright magenta) `\ = Magenta 
+\fBcolor14\fP `\ (bright cyan) `\ = Cyan 
+\fBcolor15\fP `\ (bright white) `\ = White 
+\fBforeground\fP `\  `\ = Black 
+\fBbackground\fP `\  `\ = White 
+.TE 
+.PP 
+It is also possible to specify the colour values of \fBforeground\fP,
+\fBbackground\fP, \fBcursorColor\fP, \fBcursorColor2\fP, \fBcolorBD\fP, \fBcolorUL\fP
+as a number 0-15, as a convenient shorthand to reference the colour name of
+color0-color15\&.
+.PP 
+Note that \fB-rv\fP (\fB"reverseVideo: True"\fP) simulates reverse video by
+always swapping the foreground/background colours\&.  This is in contrast to
+\fIxterm\fP(1) where the colours are only swapped if they have not otherwise been
+specified\&.
+For example,
+.PP 
+.IP "\fBaterm -fg Black -bg White -rv\fP" 
+would yield White on Black, while on \fIxterm\fP(1) it would yield
+Black on White\&.
+.SH "ENVIRONMENT" 
+.PP 
+\fBaterm\fP sets the environment variables \fBTERM\fP, \fBCOLORTERM\fP and
+\fBCOLORFGBG\fP\&.  The environment variable \fBWINDOWID\fP is set to the X window
+id number of the \fBaterm\fP window and it also uses and sets the environment
+variable \fBDISPLAY\fP to specify which display terminal to use\&.  \fBaterm\fP uses
+the environment variables \fBATERMPATH\fP, then \fBRXVTPATH\fP and finally \fBPATH\fP
+to find XPM files\&.
+.SH "FILES" 
+.PP 
+.IP "\fB/etc/utmp\fP" 
+System file for login records\&.
+.IP "\fB/usr/lib/X11/rgb\&.txt\fP" 
+Color names\&.
+.PP 
+.SH "SEE ALSO" 
+.PP 
+\fIxterm\fP(1), \fIsh\fP(1), \fIresize\fP(1), \fIX\fP(1), \fIpty\fP(4), \fItty\fP(4),
+\fIutmp\fP(5)
+.PP 
+Cursor change support is not yet implemented\&.
+.PP 
+Click-and-drag doesn\'t work with X11 mouse report overriding\&.
+.PP 
+Graphics support is fairly crude\&.
+.PP 
+.SH "FTP LOCATION" 
+.PP 
+aterm-0\&.4\&.2\&.tar\&.gz can be found at the following ftp sites
+ftp://ftp\&.afterstep\&.org/apps/aterm
+.PP 
+.SH "CURRENT PROJECT COORDINATOR" 
+.PP 
+.IP "Project Coordinator" 
+Sasha Vasko \fI<sasha@aftercode\&.net>\fP
+.br 
+.IP "Web page maintainter" 
+Sasha Vasko \fI<sasha@aftercode\&.net>\fP
+.br 
+<http://www\&.afterstep\&.org/aterm>
+.br 
+.IP "Online support" 
+You can meet maintainers online, get support, report bugs
+and make sugestions on \fBAfterStep\fP IRC channel: 
+\fI#afterstep on freenode\&.net\fP\&.
+.IP "Mailing list" 
+Support for \fBaterm\fP can be obtained from \fBAfterStep\fP mailing list
+\fIhttp://mail\&.afterstep\&.org/mailman/listinfo/as-users/\fP\&.
+.PP 
+.SH "AUTHORS" 
+.PP 
+.IP "John Bovey" 
+University of Kent, 1992, wrote the original Xvt\&.
+.IP "Rob Nation \fI<nation@rocket\&.sanders\&.lockheed\&.com>\fP" 
+very heavily modified Xvt and came up with Rxvt
+.IP "Angelo Haritsis \fI<ah@doc\&.ic\&.ac\&.uk>\fP" 
+wrote the Greek Keyboard Input
+.IP "mj olesen \fI<olesen@me\&.QueensU\&.CA>\fP" 
+Wrote the menu system\&. 
+.br 
+Project Coordinator (changes\&.txt 2\&.11 to 2\&.21)
+.IP "Oezguer Kesim \fI<kesim@math\&.fu-berlin\&.de>\fP" 
+Project Coordinator (changes\&.txt 2\&.21a to 2\&.4\&.5)
+.IP "Geoff Wing \fI<gcw@pobox\&.com>\fP" 
+Rewrote screen display and text selection routines\&. 
+.br 
+Project Coordinator (changes\&.txt 2\&.4\&.6 - )
+.IP "Sasha Vasko \fI<sasha@aftercode\&.net>\fP" 
+branched rxvt with Alfredo Kojima additions to aterm\&.
+.br 

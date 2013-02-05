@@ -1,0 +1,51 @@
+# doc/Makefile.in	-*- Makefile -*-
+# $Id: Makefile.in,v 1.2 2005/01/11 19:05:17 sasha Exp $
+@MCOMMON@
+
+srcdir = @srcdir@
+VPATH = @srcdir@
+
+basedir = ..
+thisdir = doc
+
+first_rule: all
+dummy:
+
+#
+# Distribution variables
+#
+
+DIST_ETC  = etc/rxvt.termcap etc/rxvt.terminfo etc/XTerm.ad
+DIST_MENU = menu/menu menu/example.menu menu/rxvt.menu menu/terminal.menu\
+	    menu/jedmenu.sl
+DIST	  = Makefile.in README.thai README.greek README.menu README.xvt FAQ aterm.1
+	     
+
+#-------------------------------------------------------------------------
+
+all:
+
+distclean:
+	$(RMF) Makefile
+
+install:
+	$(INSTALL_DATA) aterm.1 $(DESTDIR)$(mandir)/$(manprefix)aterm.$(manext)
+
+uninstall:
+	-cd $(mandir); $(RMF) $(manprefix)aterm.$(manext)
+
+distdirs:
+	mkdir $(basedir)/../$(VERNAME)/$(thisdir)
+	mkdir $(basedir)/../$(VERNAME)/$(thisdir)/etc
+	mkdir $(basedir)/../$(VERNAME)/$(thisdir)/menu
+
+distcopy: distdepend
+	$(CP) -p $(basedir)/$(VERNAME).lsm $(basedir)/../$(VERNAME);
+	$(CP) -p $(DIST)      $(basedir)/../$(VERNAME)/$(thisdir)
+	$(CP) -p $(DIST_ETC)  $(basedir)/../$(VERNAME)/$(thisdir)/etc
+	$(CP) -p $(DIST_MENU) $(basedir)/../$(VERNAME)/$(thisdir)/menu
+
+distdepend: alldoc
+
+# ------------------------------------------------------------------------
+# DO NOT DELETE: ugly dependency list follows

@@ -1,0 +1,166 @@
+#!/bin/sh
+
+# 
+# Copyright (c) 1999 Ethan Fischer
+#
+
+# some useful variables
+nl="
+"
+q='"'
+sednl="\\
+"
+name=`echo "$0" | sed "s@/@$sednl@g" | tail -1`
+
+# set input field separator
+old_ifs="$IFS"
+IFS=$nl
+
+# set defaults
+option_delay="10"
+option_types='*.gif,*.jpg,*.xpm'
+find_args=""
+find_args2=""
+
+# parse options
+while test -n "$1"; do
+	case "$1" in
+		-d|--delay)
+			shift
+			option_delay="$1"
+			;;
+		-e|--repeat)
+			option_repeat=1
+			;;
+		-f|--file)
+			shift
+			option_file="$1"
+			;;
+		-h|--help)
+			option_help=1
+			;;
+		-n|--new-term)
+			option_new_term=1
+			;;
+		-r|--recurse)
+			option_recurse=1
+			;;
+		-R|--random)
+			option_random=1
+			;;
+		-s|--shade)
+			shift
+			option_shade="$1"
+			;;
+		-t|--term)
+			option_term=1
+			;;
+		-v|--version)
+			option_version=1
+			;;
+		-T|--types)
+			shift
+			option_types="$1"
+			;;
+		--)
+			shift
+			break
+			;;
+		-*)
+			echo "Unknown option: $1"
+			exit 1
+			;;
+		*)
+			break
+			;;
+	esac
+	shift
+done
+
+# display version info
+if test -n "$option_version"; then
+	echo "$name version 1.0"
+	exit 0
+fi
+
+# display help
+if test -n "$option_help"; then
+	echo "Usage:"
+	echo "$name [-d] [-e] [-f file] [-h] [-n term] [-r] [-R] [-s %] [-t]"
+	printf "%*s [-T type1,[type2,[...]]] [-v] dirs\\n" ${#name} ""
+	echo "-d (--delay) n     set delay between frames to n seconds (default 10)"
+	echo "-e (--repeat)      repeatedly display list, re-randomizing if --random"
+	echo "-f (--file) f      read image names from file f"
+	echo "-h (--help)        this help"
+	echo "-n (--new-term)    open new aterm, then same as --term"
+	echo "-r (--recurse)     recursive search"
+	echo "-R (--random)      randomize image list"
+	echo "-s (--shade) %     shading option to be passed to aterm (only valid with -n)"
+	echo "-t (--term)        display image in xterm background"
+	echo "-T (--types) types types of files to display; types is a comma-separated"
+	echo '                   list (default is "*.gif,*.jpg,*.xpm")'
+	echo "-v (--version)     display version information"
+	echo "dirs               directories (or files) to search"
+	exit 0
+fi
+
+# need at least one dir
+if test -z "$*" && test -z "$option_file"; then
+	echo "$name: at least one file or directory is required"
+	exit 1
+fi
+
+# follow symlinks
+find_args="-follow"
+
+# set recursion
+if test -z $option_recurse; then
+	find_args="$find_args${nl}-maxdepth${nl}1"
+fi
+
+# set input file
+if test -n "$option_file"; then
+	opts=`cat $option_file`
+else
+  tmp="-name${nl}"`echo $option_types | sed -e "s/,/ -o -name /g" -e "s/ /$sednl/g"`
+	opts=`find "$@" $find_args $tmp | sort | uniq`
+fi
+
+# randomize the list
+if test -n "$option_random"; then
+	opts=`echo "$opts" | randomize`
+fi
+
+if test -n "$option_new_term"; then
+	echo "$opts" > /tmp/slideshow.txt
+	command="slideshow -t -f /tmp/slideshow.txt"
+	if test -n "$option_delay"; then command="$command -d $option_delay"; fi
+	if test -n "$option_repeat"; then command="$command -e"; fi
+	if test -n "$option_recurse"; then command="$command -r"; fi
+	if test -n "$option_random"; then command="$command -R"; fi
+	if test -n "$option_types"; then command="$command -T $option_types"; fi
+	if test -n "$option_shade"; then
+		aterm -sh "$option_shade" +sb -e sh -c "($command &);exec $SHELL"
+	else
+		aterm +sb -e sh -c "($command &);exec $SHELL"
+	fi
+elif test -n "$option_term"; then
+	cont=1
+	while test "$cont" = "1"; do
+		for i in $opts; do
+			echo -n "]20;$i"
+		  sleep $option_delay
+		done
+		cont=$option_repeat
+	done
+else
+	cont=1
+	while test "$cont" = "1"; do
+		for i in $opts; do
+			ascommand.pl "Background "'""'" $i"
+		  sleep $option_delay
+		done
+		cont=$option_repeat
+	done
+fi
+ 

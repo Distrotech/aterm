@@ -1,0 +1,206 @@
+
+2007-08-01  vae
+
+	* adding CL generation to makefiles
+	* fixing configure bug
+	* preparing configure for 1.0.1
+	*  changed MWM HINTS, re gentoo bug #139554.
+
+2006-06-26  sasha
+
+	* fixed compile errors when no XLocale is available
+
+2006-03-29  sasha
+
+	* converted main.c back to unix mode
+	* converted screen.c back to unix mode
+
+2006-02-17  sasha
+
+	* fixed bug preventing from pasting more then 16Kb into aterm
+
+2006-02-13  sasha
+
+	* minor cleanups
+	* fix for the high-ascii pasting in screen.c - need to use
+	  XA_STRING ???
+
+2006-01-08  sasha
+
+	*  added patch for background refresh on desktop changes in ion3
+	  when pixmap has not changed
+
+2005-12-21  sasha
+
+	* added uninstall target to the top Makefile
+
+2005-12-06  sasha
+
+	* Added patch for XIM support gratiously provided by
+	  calkin@ieee.org
+
+2005-09-19  sasha
+
+	* updated mappings for F1-F4 to modern \033OP, etc.
+	* possibly fixed pasting on 64bit systems
+
+2005-09-06  sasha
+
+	* updated contacts info in man page
+	* applyed term size patch from daniel@roe.ch
+
+2005-07-11  sasha
+
+	* fixed geometry printing into stderr
+
+2005-07-05  sasha
+
+	* updated ChangeLog for aterm 1.0 release
+	* aterm 1.0.0 release
+
+2005-06-21  sasha
+
+	* fixed root pixmap retrieval when tint type is set to true
+
+2005-06-20  sasha
+
+	* fixed floating point exception when root pixmap is changed and
+	  aterm uses shading or some other non-fast transparency options;
+	  Fixed detection of WM support for desktops when aterm is started
+	  before window manager
+
+2005-06-19  sasha
+
+	* debugging disappearing windows with shading enabled - root
+	  background pixmap has size of 0x0 for some reason which crashes
+	  aterm
+
+2005-06-09  sasha
+
+	* updated Changelog
+	* aterm 1.0.beta4 release
+
+2005-06-03  sasha
+
+	* added explicit type casts to signed/unsigned comparisons
+	* better configure output when libsAfter are not found. Fixed to
+	  compile without libAfterBase but with libAfterImage
+	* reimplemented background pixmap scaling; Added beter
+	  autodetection of AfterStep libs
+
+2005-06-02  sasha
+
+	* updated ChangeLog for 1.0.beta3 release
+	* aterm 1.0.beta3 release
+	* fixed compilation and fast transparency handling with AfterStep
+	  available
+
+2005-05-31  sasha
+
+	* added support for NET_WM_STATE Extended WM hints to see if aterm
+	  is shaded or hidden, and don't redraw background in such cases
+
+2005-05-27  sasha
+
+	* implemented and debugged checks for current desktop to avoid
+	  excessive background rendering
+
+2005-05-26  sasha
+
+	* added ExtWM specs compatible WM detection
+	* changed timeouts in delayed background rendering code
+
+2005-05-25  sasha
+
+	* implemented delayed background rendering. Fixed handling of root
+	  background changes with MyStyles
+
+2005-05-23  sasha
+
+	* Implemented fast transparency when MyStyle is BackPixmap 129 with
+	  appropriate colors; Removed extra RenderPixmap call that seems to
+	  capture wrong part of screen anyway
+
+2005-03-29  weinholt
+
+	* Put title and section is the correct order.
+	* Restore pre-tbl'ed tables.
+
+2005-03-04  sasha
+
+	* improved handling of \r chars coming in rapifd succession
+
+2005-01-26  sasha
+
+	* aterm now publishes its PID in accordance with Extended WM specs
+
+2005-01-20  sasha
+
+	* fixed compilation bug preeventing aterm to build without
+	  AfterStep
+	* fixed bugs in configure detection of afterstep-config and
+	  afterimage-config
+	* Updated ChangeLog to beta2 release
+	* aterm 1.0.beta2 release
+	* changed version for beta2 release
+
+2005-01-19  sasha
+
+	* added patches for copy-pasting and savelines thingy from gentoo
+	* imported gentoo patch for QT pasting
+	* applyed gentoo patches for borderless aterm using motif hints and
+	  internal border width  - cmdline options -bl and -ib
+	* fixed compilation with AS libraries compiled as dlls
+
+2005-01-11  sasha
+
+	* changelog updated
+	* aterm 1.0.beta1 release
+	* fixed bug in Makefile ommiting AS libs includes
+	* prepared for 1.0.beta1 release
+
+2004-12-14  sasha
+
+	* fixed handling of root background when XROOTPMAP is not set
+
+2004-12-06  weinholt
+
+	* Changed src/version.h to ${srcdir}/src/version.h.
+	* Updated config.sub and config.guess to latest versions.
+
+2004-12-03  weinholt
+
+	* Fix an uninitialized variable that would cause mute keys to
+	  repeat the previous keypress.
+
+2004-11-24  sasha
+
+	* fixed compile without libAfterStep
+
+2004-11-17  sasha
+
+	* Fixed background and foreground fetching from MyStyle
+
+2004-11-16  sasha
+
+	* fixed fore/back color handling from MyStyle
+	* Updated configure to new version 1.00.beta1
+	* enabled fading by default and fixed fading for MyStyles
+	* implemented tinting and shading when libAfterImage is not
+	  available
+
+2004-11-15  sasha
+
+	* Fixed handling of MyStyle property; background is updated when
+	  window moves and MyStyle is used; other background pixmap fixes
+	* Fixed segfault while initializing with libAfterStep present
+
+2004-11-12  sasha
+
+	* added afterstep and afterimage related code
+
+2004-11-10  sasha
+
+	* began integrating with libAfterImage and libAfterStep
+	* Initial revision
+	* [no log message]
